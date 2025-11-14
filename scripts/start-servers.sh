@@ -40,3 +40,4 @@ echo "Frontend: http://localhost:5173"
 echo ""
 echo "To stop servers, run: ./scripts/stop-servers.sh"
 
+
