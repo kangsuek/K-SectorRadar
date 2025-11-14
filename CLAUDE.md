@@ -17,6 +17,7 @@
 
 ## 참조 문서
 
+- **[ETFWeeklyReport_기능_분석_및_개선_계획.md](./docs/ETFWeeklyReport_기능_분석_및_개선_계획.md)** - 기존 프로젝트 기능 분석 및 개선 계획
 - **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - 시스템 아키텍처
 - **[API_SPECIFICATION.md](./docs/API_SPECIFICATION.md)** - REST API 명세
 - **[DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md)** - DB 스키마
