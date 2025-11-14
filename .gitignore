@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+*.db-journal
+
+# Node
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Redis
+dump.rdb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+backend.log
+frontend.log
+
+# Coverage reports
+htmlcov/
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Reference project (기존 프로젝트, 참고용)
+ETFWeeklyReport/

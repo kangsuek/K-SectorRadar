@@ -1,0 +1,139 @@
+# Cursor AI Rules for K-SectorRadar Project
+
+## Project Context
+This is a Korean high-growth sector analysis web application project (improved version of ETFWeeklyReport).
+See CLAUDE.md for full project documentation index.
+
+## Language
+- Always respond in Korean (한국어로 응답)
+- Code comments: Korean for business logic, English for technical terms
+- Documentation: Korean
+
+## Code Style
+
+### Python (Backend)
+- Follow PEP 8
+- Use type hints
+- Async/await for I/O operations
+- Use SQLAlchemy 2.0+ ORM
+- Use Pydantic 2.x for data validation
+- See docs/DEVELOPMENT_GUIDE.md for details
+
+### TypeScript/React (Frontend)
+- Use TypeScript 5.x+
+- Functional components + Hooks
+- 2-space indentation
+- Use React Query (TanStack Query) 5.x+ for server state
+- Use Zustand or Context API for client state
+- See docs/DEVELOPMENT_GUIDE.md for details
+
+## Technology Stack
+
+### Backend
+- **Framework**: FastAPI 0.104.x+
+- **Database**: PostgreSQL/MySQL (production), SQLite (development)
+- **ORM**: SQLAlchemy 2.0+
+- **Cache**: Redis 7.x+
+- **Scheduler**: APScheduler 3.10.x+
+- **Data Collection**: BeautifulSoup4, Requests
+
+### Frontend
+- **Framework**: React 18.x+ with TypeScript 5.x+
+- **Build Tool**: Vite 5.x+
+- **Routing**: React Router 6.x+
+- **State Management**: TanStack Query 5.x+ (server), Zustand/Context API (client)
+- **Styling**: Tailwind CSS 3.x+
+- **Charts**: Recharts or Chart.js
+- **Dark Mode**: Full support required
+
+## Testing Policy ⚠️ CRITICAL
+**All features must pass 100% tests before moving to next phase**
+- Write tests alongside feature implementation
+- Backend: pytest
+- Frontend: Vitest + React Testing Library
+- No feature is "done" without tests
+
+## Documentation
+- Update API_SPECIFICATION.md when adding endpoints
+- Update DATABASE_SCHEMA.md when modifying schema
+- Update TODO.md checkboxes when completing tasks
+- Update PROGRESS.md with daily summary
+- Follow docs/eng specifications
+
+## File Organization
+- Static docs: docs/
+- Progress tracking: docs/project-management/
+- Backend code: backend/
+- Frontend code: frontend/
+- English specifications: docs/eng/
+
+## Key Documents
+1. CLAUDE.md - Project index (read first)
+2. docs/DEFINITION_OF_DONE.md - Completion criteria
+3. docs/project-management/TODO.md - Current tasks
+4. docs/DEVELOPMENT_GUIDE.md - Coding standards
+5. docs/eng/ - English specifications (requirements, tech stack, API design, UI/UX)
+
+## Workflow
+1. Check TODO.md for current task
+2. Implement feature + tests
+3. Verify Definition of Done
+4. Update documentation
+5. Mark task complete in TODO.md
+6. Log in PROGRESS.md
+
+## Document Reading Strategy (자동 판단)
+
+### Always Read First (필수 4개)
+When starting any task, always read these documents first:
+1. CLAUDE.md - Project index
+2. README.md - Project overview
+3. docs/project-management/TODO.md - Current tasks
+4. docs/DEFINITION_OF_DONE.md - Completion criteria
+
+### Read Based on Task Type (작업 유형별 자동 판단)
+
+**Frontend Component Development:**
+- If code style needed → docs/DEVELOPMENT_GUIDE.md
+- If architecture context needed → docs/ARCHITECTURE.md
+- If UI/UX design needed → docs/eng/04-UI-UX-Design-Specification.md
+
+**Backend API Development:**
+- Always → docs/eng/03-Data-API-Design-Specification.md
+- If architecture context needed → docs/ARCHITECTURE.md
+
+**Database Changes:**
+- Always → docs/eng/03-Data-API-Design-Specification.md (Database Schema section)
+
+**Bug Fixes:**
+- Usually only the 4 required documents are sufficient
+- Read additional docs only if specific context is needed
+
+**Architecture Changes:**
+- Always → docs/eng/02-System-Technology-Stack-Specification.md
+- If needed → docs/ARCHITECTURE.md
+
+### Principle
+- Start with minimum required documents
+- Read additional documents only when needed during implementation
+- Don't read all documents upfront - be selective based on task type
+
+## Quality Gates
+- All tests must pass (100%)
+- No linter errors
+- TypeScript strict mode compliance
+- Documentation updated
+- Phase Acceptance Criteria met
+- Dark mode support for all UI components
+
+## Key Improvements over ETFWeeklyReport
+- TypeScript instead of JavaScript
+- PostgreSQL/MySQL instead of SQLite
+- Redis caching layer
+- Enhanced dark mode support
+- Better type safety
+- Improved architecture and scalability
+
+---
+See CLAUDE.md for detailed documentation structure.
+
