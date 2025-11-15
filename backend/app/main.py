@@ -41,7 +41,7 @@ async def base_api_exception_handler(request: Request, exc: BaseAPIException):
             error_code=exc.error_code,
             detail=exc.detail,
             timestamp=datetime.now(),
-        ).model_dump(),
+        ).model_dump(mode='json'),
     )
 
 
@@ -56,7 +56,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             error_code="VALIDATION_ERROR",
             detail=str(exc),
             timestamp=datetime.now(),
-        ).model_dump(),
+        ).model_dump(mode='json'),
     )
 
 
@@ -71,7 +71,7 @@ async def general_exception_handler(request: Request, exc: Exception):
             error_code="INTERNAL_ERROR",
             detail=str(exc) if settings.ENVIRONMENT == "development" else None,
             timestamp=datetime.now(),
-        ).model_dump(),
+        ).model_dump(mode='json'),
     )
 
 

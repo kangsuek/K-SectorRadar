@@ -84,11 +84,11 @@ async def get_stocks(
     )
     
     # 캐시에 저장
-    set_cache(cache_key, stock_list.model_dump(), CACHE_TTL)
+    set_cache(cache_key, stock_list.model_dump(by_alias=True), CACHE_TTL)
 
     return APIResponse(
         success=True,
-        data=stock_list.model_dump(),
+        data=stock_list.model_dump(by_alias=True),
         message="",
         timestamp=datetime.now(),
     )
@@ -124,11 +124,11 @@ async def get_stock(ticker: str, db: Session = Depends(get_db)):
     stock_response = StockResponse.model_validate(stock)
     
     # 캐시에 저장
-    set_cache(cache_key, stock_response.model_dump(), CACHE_TTL)
+    set_cache(cache_key, stock_response.model_dump(by_alias=True), CACHE_TTL)
 
     return APIResponse(
         success=True,
-        data=stock_response.model_dump(),
+        data=stock_response.model_dump(by_alias=True),
         message="",
         timestamp=datetime.now(),
     )

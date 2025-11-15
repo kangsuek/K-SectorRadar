@@ -1,6 +1,6 @@
 """매매 동향 모델"""
 
-from sqlalchemy import Column, BigInteger, String, Numeric, DateTime, Date, ForeignKey, Index
+from sqlalchemy import Column, BigInteger, Integer, String, Numeric, DateTime, Date, ForeignKey, Index
 from datetime import datetime
 
 from app.db_base import Base
@@ -11,7 +11,7 @@ class TradingTrend(Base):
 
     __tablename__ = "trading_trends"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True, comment="고유 ID")
+    id = Column(Integer, primary_key=True, autoincrement=True, comment="고유 ID")
     ticker = Column(String(10), ForeignKey("stocks.ticker", ondelete="CASCADE"), nullable=False, comment="종목 코드")
     date = Column(Date, nullable=False, comment="거래일")
     timestamp = Column(DateTime, nullable=False, comment="수집 시각")
@@ -21,8 +21,8 @@ class TradingTrend(Base):
     total = Column(Numeric(20, 0), nullable=True, comment="총 거래량")
 
     __table_args__ = (
-        Index("idx_ticker_date", "ticker", "date"),
-        Index("idx_ticker_timestamp", "ticker", "timestamp"),
+        Index("idx_trading_ticker_date", "ticker", "date"),
+        Index("idx_trading_ticker_timestamp", "ticker", "timestamp"),
     )
 
     def __repr__(self):

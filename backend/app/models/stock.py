@@ -27,9 +27,9 @@ class Stock(Base):
     )
 
     __table_args__ = (
-        CheckConstraint("type IN ('STOCK', 'ETF')", name="check_type"),
-        Index("idx_type", "type"),
-        Index("idx_theme", "theme"),
+        CheckConstraint("type IN ('STOCK', 'ETF')", name="check_stock_type"),
+        Index("idx_stock_type", "type"),
+        Index("idx_stock_theme", "theme"),
     )
 
     def __repr__(self):
