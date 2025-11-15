@@ -128,13 +128,148 @@
 - MySQL/SQLite 호환 AutoIncrementBigInteger 타입 구현
 
 ### 1.6 문서화
-- [ ] API 명세서 업데이트
-  - [ ] `docs/API_SPECIFICATION.md` - Phase 1 엔드포인트 문서화
-- [ ] 데이터베이스 스키마 문서 업데이트
-  - [ ] `docs/DATABASE_SCHEMA.md` - 최종 스키마 반영
-- [ ] 개발 가이드 업데이트
-  - [ ] `docs/DEVELOPMENT_GUIDE.md` - 데이터베이스 설정 가이드 추가
-  - [ ] `docs/DEVELOPMENT_GUIDE.md` - Redis 설정 가이드 추가
+**⚠️ Phase 1 완료를 위한 필수 작업입니다.**
+**📋 세부 계획**: [Phase-1.6-Plan.md](./Phase-1.6-Plan.md)
+
+#### 1.6.1 데이터베이스 스키마 문서 작성 (우선순위 1)
+- [ ] `docs/eng/DATABASE_SCHEMA.md` 작성
+  - [ ] 문서 구조 설계
+  - [ ] 데이터베이스 개요 작성 (DBMS, 인코딩, 타임존, ORM)
+  - [ ] stocks 테이블 문서화
+    - [ ] 필드 목록 및 타입 설명
+    - [ ] Primary Key, 인덱스, 제약조건
+    - [ ] SQLAlchemy 모델 정의 포함
+    - [ ] CREATE TABLE SQL 포함
+  - [ ] prices 테이블 문서화
+    - [ ] 필드 목록 및 타입 설명
+    - [ ] Primary Key, Foreign Key, 인덱스
+    - [ ] SQLAlchemy 모델 정의 포함
+    - [ ] CREATE TABLE SQL 포함
+  - [ ] trading_trends 테이블 문서화
+    - [ ] 필드 목록 및 타입 설명
+    - [ ] Primary Key, Foreign Key, 인덱스
+    - [ ] SQLAlchemy 모델 정의 포함
+    - [ ] CREATE TABLE SQL 포함
+  - [ ] news 테이블 문서화
+    - [ ] 필드 목록 및 타입 설명
+    - [ ] Primary Key, Foreign Key, 인덱스, 유니크 제약
+    - [ ] SQLAlchemy 모델 정의 포함
+    - [ ] CREATE TABLE SQL 포함
+  - [ ] ERD (텍스트 기반) 작성
+  - [ ] 인덱스 전략 문서화
+  - [ ] 마이그레이션 가이드 작성 (Alembic)
+
+#### 1.6.2 API 명세서 작성 (우선순위 2)
+- [ ] `docs/eng/API_SPECIFICATION.md` 작성
+  - [ ] 문서 구조 설계
+  - [ ] API 개요 작성
+    - [ ] Base URL, 버전, 응답 형식
+    - [ ] 인증 방식 (현재 미적용)
+    - [ ] 일반 응답 구조 (APIResponse)
+  - [ ] Phase 1 구현 완료 엔드포인트 문서화
+    - [ ] `GET /api/health` - Health Check
+      - [ ] 요청 파라미터
+      - [ ] 응답 예시 (성공/실패)
+      - [ ] 응답 스키마
+    - [ ] `GET /api/stocks` - 종목 목록 조회
+      - [ ] 쿼리 파라미터 (type, theme, limit, offset)
+      - [ ] 캐싱 정보 (TTL: 1시간)
+      - [ ] 응답 예시
+      - [ ] 응답 스키마
+    - [ ] `GET /api/stocks/{ticker}` - 종목 상세 조회
+      - [ ] 경로 파라미터 (ticker)
+      - [ ] 캐싱 정보 (TTL: 1시간)
+      - [ ] 응답 예시
+      - [ ] 응답 스키마
+    - [ ] `GET /api/prices/{ticker}` - 가격 데이터 조회
+      - [ ] 경로 파라미터 (ticker)
+      - [ ] 쿼리 파라미터 (start_date, end_date, limit, offset)
+      - [ ] 날짜 형식 설명 (YYYY-MM-DD)
+      - [ ] 캐싱 정보 (TTL: 30분)
+      - [ ] 응답 예시
+      - [ ] 응답 스키마
+  - [ ] 기본 구조만 있는 엔드포인트 표시 (Phase 2 예정)
+    - [ ] `GET /api/stocks/{ticker}/trading` (TODO)
+    - [ ] `GET /api/stocks/{ticker}/news` (TODO)
+    - [ ] `GET /api/stocks/{ticker}/chart` (TODO)
+  - [ ] 에러 응답 문서화
+    - [ ] ErrorResponse 스키마
+    - [ ] 에러 코드 목록
+      - [ ] NOT_FOUND (404)
+      - [ ] BAD_REQUEST (400)
+      - [ ] VALIDATION_ERROR (422)
+      - [ ] INTERNAL_ERROR (500)
+    - [ ] 각 에러 응답 예시
+  - [ ] 공통 스키마 문서화
+    - [ ] APIResponse
+    - [ ] ErrorResponse
+    - [ ] StockResponse / StockListResponse
+    - [ ] PriceResponse / PriceListResponse
+
+#### 1.6.3 개발 가이드 작성 (우선순위 3)
+- [ ] `docs/eng/DEVELOPMENT_GUIDE.md` 작성
+  - [ ] 문서 구조 설계
+  - [ ] 개발 환경 요구사항 작성
+    - [ ] Python 3.10+
+    - [ ] Node.js 18+ (프론트엔드용)
+    - [ ] MySQL 8.0+ / SQLite
+    - [ ] Redis 7.x+
+    - [ ] Docker & Docker Compose (선택)
+  - [ ] 프로젝트 구조 설명
+    - [ ] 디렉토리 구조
+    - [ ] 주요 파일 및 역할
+  - [ ] 백엔드 설정 가이드
+    - [ ] 가상환경 설정 (venv)
+    - [ ] 의존성 설치 (requirements.txt)
+    - [ ] 환경 변수 설정 (.env)
+      - [ ] DATABASE_URL (MySQL/SQLite)
+      - [ ] REDIS_URL
+      - [ ] CORS_ORIGINS
+    - [ ] 데이터베이스 설정
+      - [ ] MySQL 설정 및 DB 생성
+      - [ ] SQLite 설정 (개발용)
+      - [ ] 마이그레이션 실행
+      - [ ] 초기 데이터 시드
+    - [ ] Redis 설정
+      - [ ] Docker로 Redis 실행
+      - [ ] 로컬 Redis 설치 (macOS, Ubuntu, Windows)
+      - [ ] Redis 연결 확인
+    - [ ] 서버 실행
+      - [ ] uvicorn 실행 명령
+      - [ ] API 문서 접근 (Swagger UI)
+  - [ ] 테스트 실행 가이드
+    - [ ] 단위 테스트 실행 (pytest)
+    - [ ] 커버리지 확인 (pytest-cov)
+    - [ ] 특정 테스트 실행
+  - [ ] API 문서 접근 방법
+    - [ ] Swagger UI (http://localhost:8000/docs)
+    - [ ] ReDoc (http://localhost:8000/redoc)
+    - [ ] 엔드포인트 테스트 방법
+  - [ ] 개발 워크플로우
+    - [ ] 코드 스타일 가이드 (Black, Flake8)
+    - [ ] 커밋 메시지 규칙
+    - [ ] 브랜치 전략
+  - [ ] 트러블슈팅 섹션
+    - [ ] 데이터베이스 연결 오류
+    - [ ] Redis 연결 오류
+    - [ ] 포트 충돌 문제
+    - [ ] 자주 발생하는 문제 및 해결 방법
+
+#### 1.6.4 문서 검토 및 완성
+- [ ] 모든 문서 상호 참조 확인
+  - [ ] 문서 간 링크 정확성 확인
+  - [ ] 참조하는 파일 경로 확인
+- [ ] 코드 예제 검증
+  - [ ] SQL 쿼리 실행 가능 여부 확인
+  - [ ] Shell 명령어 실행 가능 여부 확인
+  - [ ] Python 코드 예제 동작 확인
+- [ ] 명령어 실행 가능 여부 확인
+  - [ ] 모든 bash 명령어 테스트
+  - [ ] 환경별 명령어 차이 확인 (macOS/Linux/Windows)
+- [ ] 오타 및 문법 검토
+  - [ ] 문서 전체 리뷰
+  - [ ] 기술 용어 일관성 확인
+  - [ ] 마크다운 포맷팅 확인
 
 ## Phase 2: 데이터 수집 기능
 **⚠️ Phase 1의 모든 테스트가 통과한 후에만 시작합니다.**
