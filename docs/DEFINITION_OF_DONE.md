@@ -26,3 +26,5 @@
 - [ ] Performance: Page load 3s, chart render 1s, refresh 30s
 - [ ] Security: Input validation, ORM usage, environment variable management
 - [ ] Browser compatibility: Latest versions of Chrome, Firefox, Safari, Edge
+
+---

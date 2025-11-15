@@ -1,19 +1,21 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: k-sectorradar-postgres
+  mysql:
+    image: mysql:8.0
+    container_name: k-sectorradar-mysql
     environment:
-      POSTGRES_USER: sectorradar
-      POSTGRES_PASSWORD: sectorradar
-      POSTGRES_DB: sectorradar
+      MYSQL_ROOT_PASSWORD: sectorradar
+      MYSQL_DATABASE: sectorradar
+      MYSQL_USER: sectorradar
+      MYSQL_PASSWORD: sectorradar
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sectorradar"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psectorradar"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,11 +44,11 @@ services:
     environment:
       - API_HOST=0.0.0.0
       - API_PORT=8000
-      - DATABASE_URL=postgresql://sectorradar:sectorradar@postgres:5432/sectorradar
+      - DATABASE_URL=mysql+pymysql://sectorradar:sectorradar@mysql:3306/sectorradar
       - REDIS_URL=redis://redis:6379/0
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -66,6 +68,6 @@ services:
       - backend
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:
 

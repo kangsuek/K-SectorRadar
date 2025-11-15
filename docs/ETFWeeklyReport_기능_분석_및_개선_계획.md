@@ -420,8 +420,8 @@
 ### 5.2 K-SectorRadar 문서
 - [요구사항 명세서](./eng/01-Requirements-Specification.md)
 - [기술 스택 명세서](./eng/02-System-Technology-Stack-Specification.md)
-- [데이터/API 설계 명세서](./eng/03-Data-API-Design-Specification.md)
-- [UI/UX 설계 명세서](./eng/04-UI-UX-Design-Specification.md)
+- [데이터/API 설계 명세서](./eng/05-Data-API-Design-Specification.md)
+- [UI/UX 설계 명세서](./eng/06-UI-UX-Design-Specification.md)
 
 ---
 

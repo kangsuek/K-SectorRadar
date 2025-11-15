@@ -66,7 +66,7 @@ DATABASE_URL=mysql+pymysql://root:password@localhost:3306/sectorradar
 # 또는 사용자 계정 사용 시
 # DATABASE_URL=mysql+pymysql://sectorradar:your_password@localhost:3306/sectorradar
 
-# PostgreSQL (Alternative)
+# PostgreSQL (Optional Alternative - not recommended)
 # DATABASE_URL=postgresql://user:password@localhost:5432/sectorradar
 
 # SQLite (Alternative - for testing only)

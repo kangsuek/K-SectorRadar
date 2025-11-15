@@ -32,9 +32,9 @@ Korean high-growth sector analysis web application (improved version of ETFWeekl
 4. docs/DEFINITION_OF_DONE.md
 
 ## Additional Documents by Task Type (only when needed)
-- **Backend API**: docs/eng/03-Data-API-Design-Specification.md
-- **Frontend**: docs/eng/04-UI-UX-Design-Specification.md
-- **DB Changes**: docs/eng/03-Data-API-Design-Specification.md (Schema section)
+- **Backend API**: docs/eng/03-API_SPECIFICATION.md
+- **Frontend**: docs/eng/06-UI-UX-Design-Specification.md
+- **DB Changes**: docs/eng/04-DATABASE_SCHEMA.md
 
 ## Quality Standards
 - All tests pass

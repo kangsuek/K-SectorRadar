@@ -117,24 +117,30 @@
 - [x] Phase 1 완료 검증
   - [x] 모든 테스트 통과 확인 (77개 통과, 2개 skip) ✅
   - [x] 테스트 커버리지 리포트 확인 (88% 달성) ✅
-  - [ ] API 문서화 완료 확인 (Swagger UI) - Phase 1.6에서 완료 예정
-  - [ ] 관련 문서 업데이트 완료 확인 - Phase 1.6에서 완료 예정
-
-**주요 수정사항:**
-- 중복 인덱스 이름 수정 (SQLite 전역 고유 요구사항)
-- Pydantic v2 마이그레이션 (Config → ConfigDict)
-- API 응답 직렬화 개선 (by_alias=True, mode='json')
-- SQLite 외래키 제약조건 활성화
-- MySQL/SQLite 호환 AutoIncrementBigInteger 타입 구현
+  - [x] API 문서화 완료 확인 (API 명세서, DB 스키마 문서) ✅
 
 ### 1.6 문서화
-- [ ] API 명세서 업데이트
-  - [ ] `docs/API_SPECIFICATION.md` - Phase 1 엔드포인트 문서화
-- [ ] 데이터베이스 스키마 문서 업데이트
-  - [ ] `docs/DATABASE_SCHEMA.md` - 최종 스키마 반영
-- [ ] 개발 가이드 업데이트
-  - [ ] `docs/DEVELOPMENT_GUIDE.md` - 데이터베이스 설정 가이드 추가
-  - [ ] `docs/DEVELOPMENT_GUIDE.md` - Redis 설정 가이드 추가
+- [x] API 명세서 업데이트
+  - [x] `docs/eng/03-API_SPECIFICATION.md` - Phase 1 엔드포인트 문서화 완료
+    - [x] Health Check, Stocks, Prices 엔드포인트 문서화 완료
+    - [x] Trading, News, Chart, Refresh 엔드포인트 구조 문서화 (구현 대기 중)
+- [x] 데이터베이스 스키마 문서 업데이트
+  - [x] `docs/eng/04-DATABASE_SCHEMA.md` - 최종 스키마 반영 완료
+    - [x] stocks, prices, trading_trends, news 테이블 정의 완료
+    - [x] 인덱스, 외래키, 제약조건 문서화 완료
+- [x] 개발 가이드 업데이트
+  - [x] `docs/eng/07-DEVELOPMENT_GUIDE.md` - 파일 생성 및 데이터베이스 설정 가이드 추가
+    - [x] MySQL, PostgreSQL, SQLite 설정 가이드 완료
+    - [x] 데이터베이스 초기화 및 시드 가이드 완료
+  - [x] `docs/eng/07-DEVELOPMENT_GUIDE.md` - Redis 설정 가이드 추가
+    - [x] Redis 설치 및 설정 가이드 완료
+    - [x] Redis 연결 테스트 및 검증 가이드 완료
+  - [x] 환경 변수 설정 가이드 추가
+  - [x] 개발 환경 설정 가이드 추가
+  - [x] 마이그레이션 실행 가이드 추가
+  - [x] 테스트 실행 가이드 추가
+- [ ] Swagger UI 수동 테스트 확인
+  - [ ] Phase 1 구현 엔드포인트 (Health, Stocks, Prices) 수동 테스트 완료 확인
 
 ## Phase 2: 데이터 수집 기능
 **⚠️ Phase 1의 모든 테스트가 통과한 후에만 시작합니다.**
@@ -305,7 +311,7 @@
 
 ### 5.3 문서화 완료
 - [ ] API 명세서 최종 업데이트
-  - [ ] `docs/API_SPECIFICATION.md` - 모든 엔드포인트 문서화
+  - [ ] `docs/eng/03-API_SPECIFICATION.md` - 모든 엔드포인트 문서화
 - [ ] 개발 가이드 최종 업데이트
   - [ ] `docs/DEVELOPMENT_GUIDE.md` - 완전한 개발 가이드
 - [ ] 배포 가이드 작성
