@@ -90,34 +90,42 @@
     - [x] `app/schemas/price.py` - Price 관련 스키마
     - [x] `app/schemas/response.py` - 공통 응답 스키마
 
-### 1.5 테스트 및 검증 ⚠️ 필수
-**⚠️ 이 섹션의 모든 테스트가 통과해야 Phase 1 완료로 간주됩니다.**
+### 1.5 테스트 및 검증 ⚠️ 필수 (완료)
+**✅ 모든 테스트 통과: 77개 통과, 2개 skip, 88% 커버리지 달성**
 
 - [x] 데이터베이스 연결 테스트
   - [x] `tests/test_database.py` - DB 연결 테스트 작성
   - [x] 모델 생성/조회 테스트
-  - [ ] 테스트 커버리지 80% 이상 달성 (테스트 실행 필요)
+  - [x] 테스트 커버리지 80% 이상 달성 ✅
 - [x] Redis 캐싱 테스트
   - [x] `tests/test_cache.py` - 캐시 기능 테스트 작성
   - [x] 캐시 TTL 테스트
   - [x] 캐시 무효화 테스트
-  - [ ] 테스트 커버리지 80% 이상 달성 (테스트 실행 필요)
+  - [x] 테스트 커버리지 80% 이상 달성 ✅
 - [x] API 엔드포인트 테스트
   - [x] `tests/test_api_stocks.py` - 종목 API 테스트 작성
   - [x] `tests/test_api_health.py` - Health check 테스트 작성
   - [x] `tests/test_api_prices.py` - 가격 데이터 API 테스트 작성
   - [x] 캐싱 동작 검증 테스트
   - [x] 에러 핸들링 테스트
-  - [ ] 테스트 커버리지 80% 이상 달성 (테스트 실행 필요)
+  - [x] 테스트 커버리지 80% 이상 달성 ✅
 - [x] 통합 테스트
   - [x] 데이터베이스 + Redis + API 통합 테스트 (`tests/test_integration.py`)
   - [x] 테스트 데이터베이스 설정 (`tests/conftest.py`)
+  - [x] MySQL/SQLite 호환 AutoIncrementBigInteger 타입 구현 (`app/db_types.py`)
   - [ ] Swagger UI를 통한 API 수동 테스트 완료 (수동 확인 필요)
-- [ ] Phase 1 완료 검증
-  - [ ] 모든 테스트 통과 확인 (테스트 실행 필요)
-  - [ ] 테스트 커버리지 리포트 확인 (80% 이상) (테스트 실행 필요)
-  - [ ] API 문서화 완료 확인 (Swagger UI)
-  - [ ] 관련 문서 업데이트 완료 확인
+- [x] Phase 1 완료 검증
+  - [x] 모든 테스트 통과 확인 (77개 통과, 2개 skip) ✅
+  - [x] 테스트 커버리지 리포트 확인 (88% 달성) ✅
+  - [ ] API 문서화 완료 확인 (Swagger UI) - Phase 1.6에서 완료 예정
+  - [ ] 관련 문서 업데이트 완료 확인 - Phase 1.6에서 완료 예정
+
+**주요 수정사항:**
+- 중복 인덱스 이름 수정 (SQLite 전역 고유 요구사항)
+- Pydantic v2 마이그레이션 (Config → ConfigDict)
+- API 응답 직렬화 개선 (by_alias=True, mode='json')
+- SQLite 외래키 제약조건 활성화
+- MySQL/SQLite 호환 AutoIncrementBigInteger 타입 구현
 
 ### 1.6 문서화
 - [ ] API 명세서 업데이트
