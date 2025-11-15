@@ -4,6 +4,7 @@ from sqlalchemy import Column, BigInteger, Integer, String, Numeric, DateTime, D
 from datetime import datetime
 
 from app.db_base import Base
+from app.db_types import AutoIncrementBigInteger
 
 
 class TradingTrend(Base):
@@ -11,7 +12,7 @@ class TradingTrend(Base):
 
     __tablename__ = "trading_trends"
 
-    id = Column(Integer, primary_key=True, autoincrement=True, comment="고유 ID")
+    id = Column(AutoIncrementBigInteger, primary_key=True, autoincrement=True, comment="고유 ID")
     ticker = Column(String(10), ForeignKey("stocks.ticker", ondelete="CASCADE"), nullable=False, comment="종목 코드")
     date = Column(Date, nullable=False, comment="거래일")
     timestamp = Column(DateTime, nullable=False, comment="수집 시각")
