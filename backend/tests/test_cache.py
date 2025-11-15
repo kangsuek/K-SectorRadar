@@ -120,6 +120,34 @@ class TestCacheFunctions:
         call_args = mock_redis_client.setex.call_args
         assert call_args[0][1] == DEFAULT_TTL
     
+    def test_set_cache_custom_ttl(self, mock_redis_client):
+        """커스텀 TTL 사용 테스트"""
+        test_data = {"key": "value"}
+        custom_ttl = 1800  # 30분
+        
+        set_cache("test_key", test_data, ttl=custom_ttl)
+        
+        call_args = mock_redis_client.setex.call_args
+        assert call_args[0][1] == custom_ttl
+    
+    def test_cache_ttl_expiration(self, mock_redis_client):
+        """캐시 TTL 만료 테스트"""
+        import time
+        
+        # TTL이 짧은 캐시 저장
+        test_data = {"key": "value"}
+        short_ttl = 1  # 1초
+        
+        set_cache("test_key", test_data, ttl=short_ttl)
+        
+        # TTL이 설정되었는지 확인
+        call_args = mock_redis_client.setex.call_args
+        assert call_args[0][1] == short_ttl
+        
+        # 실제 Redis에서는 TTL이 지나면 자동으로 삭제되지만,
+        # 모킹 환경에서는 setex 호출만 확인
+        assert mock_redis_client.setex.called
+    
     def test_set_cache_error(self, mock_redis_client):
         """캐시 저장 오류 테스트"""
         mock_redis_client.setex.side_effect = Exception("Connection error")

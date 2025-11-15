@@ -3,7 +3,7 @@
 from sqlalchemy import Column, BigInteger, String, Numeric, DateTime, Date, ForeignKey, Index
 from datetime import datetime
 
-from app.database import Base
+from app.db_base import Base
 
 
 class TradingTrend(Base):

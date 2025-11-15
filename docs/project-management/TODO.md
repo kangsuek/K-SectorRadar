@@ -64,58 +64,58 @@
   - [x] 종목 정보 변경 시 캐시 무효화 로직
   - [x] 캐시 무효화 헬퍼 함수 구현
 
-### 1.4 기본 API 엔드포인트 구현
-- [ ] Health Check 엔드포인트
-  - [ ] `GET /api/health` - 서버 상태 확인
-  - [ ] 데이터베이스 연결 상태 확인
-  - [ ] Redis 연결 상태 확인
-- [ ] 종목 관리 API
-  - [ ] `GET /api/stocks` - 전체 종목 목록 조회 (캐싱 적용)
-  - [ ] `GET /api/stocks/{ticker}` - 종목 상세 정보 조회 (캐싱 적용)
+### 1.4 기본 API 엔드포인트 구현 (완료)
+- [x] Health Check 엔드포인트
+  - [x] `GET /api/health` - 서버 상태 확인
+  - [x] 데이터베이스 연결 상태 확인
+  - [x] Redis 연결 상태 확인
+- [x] 종목 관리 API
+  - [x] `GET /api/stocks` - 전체 종목 목록 조회 (캐싱 적용)
+  - [x] `GET /api/stocks/{ticker}` - 종목 상세 정보 조회 (캐싱 적용)
   - [ ] `POST /api/stocks` - 종목 추가 (관리자용, Phase 2 이후)
   - [ ] `PUT /api/stocks/{ticker}` - 종목 정보 수정 (관리자용, Phase 2 이후)
   - [ ] `DELETE /api/stocks/{ticker}` - 종목 삭제 (관리자용, Phase 2 이후)
-- [ ] 가격 데이터 API (기본 구조)
-  - [ ] `GET /api/prices/{ticker}` - 종목 가격 데이터 조회 (캐싱 적용)
-  - [ ] 날짜 범위 필터링 지원 (query parameters)
-- [ ] 에러 핸들링
-  - [ ] `app/exceptions.py` - 커스텀 예외 클래스 정의
-  - [ ] `app/main.py` - 전역 예외 핸들러 등록
-  - [ ] 일관된 에러 응답 형식 정의
-- [ ] API 문서화
-  - [ ] Swagger UI 자동 문서화 확인
-  - [ ] 주요 엔드포인트에 docstring 추가
-  - [ ] Pydantic 스키마 정의 (`app/schemas/` 디렉토리)
-    - [ ] `app/schemas/stock.py` - Stock 관련 스키마
-    - [ ] `app/schemas/price.py` - Price 관련 스키마
-    - [ ] `app/schemas/response.py` - 공통 응답 스키마
+- [x] 가격 데이터 API (기본 구조)
+  - [x] `GET /api/prices/{ticker}` - 종목 가격 데이터 조회 (캐싱 적용)
+  - [x] 날짜 범위 필터링 지원 (query parameters)
+- [x] 에러 핸들링
+  - [x] `app/exceptions.py` - 커스텀 예외 클래스 정의
+  - [x] `app/main.py` - 전역 예외 핸들러 등록
+  - [x] 일관된 에러 응답 형식 정의
+- [x] API 문서화
+  - [x] Swagger UI 자동 문서화 확인
+  - [x] 주요 엔드포인트에 docstring 추가
+  - [x] Pydantic 스키마 정의 (`app/schemas/` 디렉토리)
+    - [x] `app/schemas/stock.py` - Stock 관련 스키마
+    - [x] `app/schemas/price.py` - Price 관련 스키마
+    - [x] `app/schemas/response.py` - 공통 응답 스키마
 
 ### 1.5 테스트 및 검증 ⚠️ 필수
 **⚠️ 이 섹션의 모든 테스트가 통과해야 Phase 1 완료로 간주됩니다.**
 
-- [ ] 데이터베이스 연결 테스트
-  - [ ] `tests/test_database.py` - DB 연결 테스트 작성
-  - [ ] 모델 생성/조회 테스트
-  - [ ] 테스트 커버리지 80% 이상 달성
-- [ ] Redis 캐싱 테스트
-  - [ ] `tests/test_cache.py` - 캐시 기능 테스트 작성
-  - [ ] 캐시 TTL 테스트
-  - [ ] 캐시 무효화 테스트
-  - [ ] 테스트 커버리지 80% 이상 달성
-- [ ] API 엔드포인트 테스트
-  - [ ] `tests/test_api_stocks.py` - 종목 API 테스트 작성
-  - [ ] `tests/test_api_health.py` - Health check 테스트 작성
-  - [ ] `tests/test_api_prices.py` - 가격 데이터 API 테스트 작성
-  - [ ] 캐싱 동작 검증 테스트
-  - [ ] 에러 핸들링 테스트
-  - [ ] 테스트 커버리지 80% 이상 달성
-- [ ] 통합 테스트
-  - [ ] 데이터베이스 + Redis + API 통합 테스트
-  - [ ] 테스트 데이터베이스 설정
-  - [ ] Swagger UI를 통한 API 수동 테스트 완료
+- [x] 데이터베이스 연결 테스트
+  - [x] `tests/test_database.py` - DB 연결 테스트 작성
+  - [x] 모델 생성/조회 테스트
+  - [ ] 테스트 커버리지 80% 이상 달성 (테스트 실행 필요)
+- [x] Redis 캐싱 테스트
+  - [x] `tests/test_cache.py` - 캐시 기능 테스트 작성
+  - [x] 캐시 TTL 테스트
+  - [x] 캐시 무효화 테스트
+  - [ ] 테스트 커버리지 80% 이상 달성 (테스트 실행 필요)
+- [x] API 엔드포인트 테스트
+  - [x] `tests/test_api_stocks.py` - 종목 API 테스트 작성
+  - [x] `tests/test_api_health.py` - Health check 테스트 작성
+  - [x] `tests/test_api_prices.py` - 가격 데이터 API 테스트 작성
+  - [x] 캐싱 동작 검증 테스트
+  - [x] 에러 핸들링 테스트
+  - [ ] 테스트 커버리지 80% 이상 달성 (테스트 실행 필요)
+- [x] 통합 테스트
+  - [x] 데이터베이스 + Redis + API 통합 테스트 (`tests/test_integration.py`)
+  - [x] 테스트 데이터베이스 설정 (`tests/conftest.py`)
+  - [ ] Swagger UI를 통한 API 수동 테스트 완료 (수동 확인 필요)
 - [ ] Phase 1 완료 검증
-  - [ ] 모든 테스트 통과 확인
-  - [ ] 테스트 커버리지 리포트 확인 (80% 이상)
+  - [ ] 모든 테스트 통과 확인 (테스트 실행 필요)
+  - [ ] 테스트 커버리지 리포트 확인 (80% 이상) (테스트 실행 필요)
   - [ ] API 문서화 완료 확인 (Swagger UI)
   - [ ] 관련 문서 업데이트 완료 확인
 

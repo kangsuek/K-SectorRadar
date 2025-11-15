@@ -3,7 +3,7 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, Index, UniqueConstraint
 from datetime import datetime
 
-from app.database import Base
+from app.db_base import Base
 
 
 class News(Base):

@@ -1,7 +1,6 @@
 """데이터베이스 연결 및 초기화"""
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool, QueuePool
 from typing import Generator
@@ -10,7 +9,8 @@ import os
 from pathlib import Path
 
 from app.config import settings
-from app.models import Stock, Price, TradingTrend, News
+from app.db_base import Base
+# 모델은 순환 import 방지를 위해 init_db() 함수 내에서만 import
 
 # SQLite용 설정
 if settings.DATABASE_URL.startswith("sqlite"):
@@ -46,7 +46,6 @@ else:
     )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 
 
 async def init_db():
@@ -78,6 +77,9 @@ def seed_stocks_from_json(db: Session, json_path: str = None) -> int:
     Returns:
         추가된 종목 수
     """
+    # 순환 import 방지
+    from app.models.stock import Stock
+    
     if json_path is None:
         # 기본 경로: backend/config/stocks.json
         base_dir = Path(__file__).parent.parent

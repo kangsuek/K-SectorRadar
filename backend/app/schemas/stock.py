@@ -1,7 +1,7 @@
 """Stock 관련 스키마"""
 
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from decimal import Decimal
 
@@ -9,11 +9,11 @@ from decimal import Decimal
 class StockBase(BaseModel):
     """Stock 기본 스키마"""
     
-    ticker: str = Field(..., description="종목 코드", example="034020")
-    name: str = Field(..., description="종목명", example="두산에너빌리티")
-    type: str = Field(..., description="종목 유형 (STOCK/ETF)", example="STOCK")
-    theme: Optional[str] = Field(None, description="테마 분류", example="Nuclear/Power Plant/Energy")
-    fee: Optional[Decimal] = Field(None, description="수수료 (ETF만 해당)", example=None)
+    ticker: str = Field(..., description="종목 코드")
+    name: str = Field(..., description="종목명")
+    type: str = Field(..., description="종목 유형 (STOCK/ETF)")
+    theme: Optional[str] = Field(None, description="테마 분류")
+    fee: Optional[Decimal] = Field(None, description="수수료 (ETF만 해당)")
 
 
 class StockResponse(StockBase):
@@ -22,10 +22,10 @@ class StockResponse(StockBase):
     created_at: datetime = Field(..., description="생성일시", alias="createdAt")
     updated_at: datetime = Field(..., description="수정일시", alias="updatedAt")
     
-    class Config:
-        from_attributes = True
-        populate_by_name = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        json_schema_extra={
             "example": {
                 "ticker": "034020",
                 "name": "두산에너빌리티",
@@ -36,13 +36,14 @@ class StockResponse(StockBase):
                 "updatedAt": "2025-11-13T21:22:11Z"
             }
         }
+    )
 
 
 class StockListResponse(BaseModel):
     """Stock 목록 응답 스키마"""
     
     stocks: List[StockResponse]
-    total: int = Field(..., description="전체 개수", example=100)
-    limit: int = Field(..., description="페이지 크기", example=100)
-    offset: int = Field(..., description="오프셋", example=0)
+    total: int = Field(..., description="전체 개수")
+    limit: int = Field(..., description="페이지 크기")
+    offset: int = Field(..., description="오프셋")
 

@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Numeric, DateTime, CheckConstraint, Index
 from sqlalchemy.sql import func
 from datetime import datetime
 
-from app.database import Base
+from app.db_base import Base
 
 
 class Stock(Base):
