@@ -73,8 +73,8 @@ class TestGetPrice:
         
         price_data = data["data"]["prices"][0]
         assert price_data["ticker"] == "PRICE001"
-        assert price_data["currentPrice"] == 100000
-        assert price_data["changeRate"] == 2.5
+        assert float(price_data["currentPrice"]) == 100000
+        assert float(price_data["changeRate"]) == 2.5
     
     def test_get_price_with_date_range(self, client, db_session):
         """날짜 범위로 가격 데이터 조회 테스트"""
@@ -256,7 +256,8 @@ class TestGetPrice:
         # 종목 및 가격 데이터 생성
         stock = Stock(ticker="CACHE001", name="캐시 테스트", type="STOCK")
         db_session.add(stock)
-        
+        db_session.commit()
+
         price = Price(
             ticker="CACHE001",
             date=date(2025, 1, 1),
@@ -273,8 +274,13 @@ class TestGetPrice:
         assert mock_set_cache.called
     
     @patch('app.api.prices.get_cache')
-    def test_get_price_cache_hit(self, mock_get_cache, client):
+    def test_get_price_cache_hit(self, mock_get_cache, client, db_session):
         """가격 데이터 캐시 히트 테스트"""
+        # 종목 생성 (API가 종목 존재를 먼저 확인하므로 필요)
+        stock = Stock(ticker="CACHED001", name="캐시 테스트 종목", type="STOCK")
+        db_session.add(stock)
+        db_session.commit()
+
         # 캐시 히트 시뮬레이션
         cached_data = {
             "prices": [
@@ -283,13 +289,13 @@ class TestGetPrice:
                     "ticker": "CACHED001",
                     "date": "2025-01-01",
                     "timestamp": "2025-01-01T15:30:00",
-                    "currentPrice": 100000,
-                    "changeRate": 2.5,
-                    "changeAmount": 2500,
-                    "openPrice": 98000,
-                    "highPrice": 102000,
-                    "lowPrice": 97500,
-                    "volume": 1000000,
+                    "currentPrice": "100000.00",
+                    "changeRate": "2.50",
+                    "changeAmount": "2500.00",
+                    "openPrice": "98000.00",
+                    "highPrice": "102000.00",
+                    "lowPrice": "97500.00",
+                    "volume": "1000000.00",
                 }
             ],
             "total": 1,
@@ -307,7 +313,7 @@ class TestGetPrice:
         assert data["data"]["total"] == 1
         assert len(data["data"]["prices"]) == 1
         assert data["data"]["prices"][0]["ticker"] == "CACHED001"
-        assert data["data"]["prices"][0]["currentPrice"] == 100000
+        assert float(data["data"]["prices"][0]["currentPrice"]) == 100000
     
     def test_get_price_ordering(self, client, db_session):
         """가격 데이터 정렬 테스트 (최신순)"""

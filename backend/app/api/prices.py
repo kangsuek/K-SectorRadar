@@ -133,11 +133,11 @@ async def get_price(
     )
     
     # 캐시에 저장
-    set_cache(cache_key, price_list.model_dump(), CACHE_TTL)
+    set_cache(cache_key, price_list.model_dump(by_alias=True), CACHE_TTL)
 
     return APIResponse(
         success=True,
-        data=price_list.model_dump(),
+        data=price_list.model_dump(by_alias=True),
         message="",
         timestamp=datetime.now(),
     )

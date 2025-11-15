@@ -24,14 +24,18 @@ from app.utils.cache import (
 
 class TestRedisConnection:
     """Redis 연결 테스트"""
-    
+
+    @pytest.mark.skipif(
+        not test_redis_connection(),
+        reason="Redis 서버가 실행 중이 아닙니다"
+    )
     def test_get_redis_client_singleton(self):
         """Redis 클라이언트 싱글톤 패턴 테스트"""
         close_redis_client()  # 초기화
-        
+
         client1 = get_redis_client()
         client2 = get_redis_client()
-        
+
         assert client1 is client2
     
     @pytest.mark.skipif(

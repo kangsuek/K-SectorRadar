@@ -268,8 +268,8 @@ class TestStocksAPIErrorHandling:
     def test_get_stock_invalid_ticker_format(self, client):
         """잘못된 ticker 형식 테스트"""
         # ticker는 문자열이므로 형식 검증은 없지만, 존재하지 않으면 404
-        response = client.get("/api/stocks/")
-        
-        # 경로가 잘못되었으므로 404 또는 422
-        assert response.status_code in [404, 422]
+        response = client.get("/api/stocks/invalid@ticker!")
+
+        # 존재하지 않는 종목이므로 404
+        assert response.status_code == 404
 
