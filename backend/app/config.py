@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """애플리케이션 설정"""
 
     # Database
-    DATABASE_URL: str = "sqlite:///./data/sectorradar.db"
+    DATABASE_URL: str = "mysql+pymysql://root:password@localhost:3306/sectorradar"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

@@ -85,9 +85,9 @@ This document includes technology stacks for frontend, backend, database, infras
 ### 2.3 Database
 
 #### 2.3.1 Relational Database
-- **PostgreSQL** or **MySQL**
-  - Version: Latest stable version
-  - Selection Reason: Stability, performance, rich features, scalability
+- **MySQL**
+  - Version: 8.0 or higher
+  - Selection Reason: Stability, performance, rich features, scalability, wide adoption
 
 #### 2.3.2 Cache
 - **Redis**: In-Memory Cache
@@ -150,7 +150,7 @@ The system is based on a 3-layer architecture (Presentation, Application, Data L
         │                 │                 │
 ┌───────▼──────┐  ┌───────▼──────┐  ┌───────▼──────┐
 │   Database   │  │  Redis Cache  │  │ Data Collector│
-│ (PostgreSQL)│  │               │  │  (Scheduler) │
+│    (MySQL)   │  │               │  │  (Scheduler) │
 │             │  │               │  │              │
 └──────────────┘  └──────────────┘  └──────────────┘
                           │
@@ -283,6 +283,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 ```bash
 pip install fastapi uvicorn
 pip install sqlalchemy
+pip install pymysql cryptography  # MySQL driver
 pip install beautifulsoup4 requests
 pip install apscheduler
 pip install redis
@@ -291,11 +292,29 @@ pip install pydantic
 
 ### 4.3 Database Setup
 
-#### 4.3.1 PostgreSQL Installation and Setup
-- Local Development: Docker recommended
+#### 4.3.1 MySQL Installation and Setup
+- Local Development: 
+  - macOS: `brew install mysql && brew services start mysql`
+  - Ubuntu/Debian: `sudo apt-get install mysql-server && sudo systemctl start mysql`
+  - Docker: `docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d mysql:8.0`
 - Production Environment: Cloud DB service or self-hosted server
 
-#### 4.3.2 Redis Installation and Setup
+#### 4.3.2 Database Creation
+```bash
+# MySQL 접속
+mysql -u root -p
+
+# 데이터베이스 생성
+CREATE DATABASE sectorradar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# 사용자 생성 및 권한 부여 (선택사항)
+CREATE USER 'sectorradar'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON sectorradar.* TO 'sectorradar'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+#### 4.3.3 Redis Installation and Setup
 - Local Development: Docker recommended
 - Production Environment: Cloud cache service or self-hosted server
 
@@ -313,7 +332,7 @@ pip install pydantic
 #### 5.2.1 Option 1: Cloud Platform
 - **Vercel** or **Netlify**: Frontend deployment
 - **Railway** or **Render**: Backend deployment
-- **Supabase** or **PlanetScale**: Database
+- **PlanetScale**, **AWS RDS**, or **Google Cloud SQL**: MySQL database
 - **Upstash**: Redis cache
 
 #### 5.2.2 Option 2: Self-Hosted Server

@@ -32,7 +32,7 @@ A web application that provides real-time monitoring, detailed analysis, and com
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- PostgreSQL (or MySQL)
+- MySQL 8.0+
 - Redis 7.x+
 - Docker & Docker Compose (optional)
 
@@ -69,7 +69,7 @@ npm run dev
 
 ### Backend
 - **Framework**: FastAPI 0.104.x+
-- **Database**: PostgreSQL/MySQL (production), SQLite (development)
+- **Database**: MySQL 8.0+ (development & production)
 - **ORM**: SQLAlchemy 2.0+
 - **Cache**: Redis 7.x+
 - **Scheduler**: APScheduler 3.10.x+
@@ -100,7 +100,7 @@ npm run dev
 ## 🔄 Key Differences from ETFWeeklyReport
 
 - ✅ TypeScript (improved type safety)
-- ✅ PostgreSQL/MySQL support (instead of SQLite)
+- ✅ MySQL support (instead of SQLite)
 - ✅ Redis caching layer
 - ✅ Enhanced dark mode support
 - ✅ Better architecture and scalability

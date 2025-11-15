@@ -44,25 +44,25 @@
   - [x] `config/stocks.json` 데이터를 DB에 로드하는 로직 구현
 
 ### 1.3 Redis 캐싱 레이어 구현
-- [ ] Redis 연결 설정
-  - [ ] `app/config.py` - Redis 설정 추가
-  - [ ] `app/utils/redis.py` - Redis 클라이언트 유틸리티 생성
-  - [ ] 환경 변수 설정 (.env.example 업데이트)
-  - [ ] Redis 연결 테스트
-- [ ] 캐시 유틸리티 함수 구현
-  - [ ] `app/utils/cache.py` - 캐시 헬퍼 함수 생성
-    - [ ] `get_cache(key)` - 캐시 조회
-    - [ ] `set_cache(key, value, ttl)` - 캐시 저장
-    - [ ] `delete_cache(key)` - 캐시 삭제
-    - [ ] `clear_cache_pattern(pattern)` - 패턴 기반 캐시 삭제
-- [ ] 캐시 데코레이터 구현
-  - [ ] `app/utils/cache.py` - `@cache_result` 데코레이터 구현
-  - [ ] TTL 설정 가능한 캐시 데코레이터
-  - [ ] 캐시 키 생성 전략
-- [ ] 캐시 무효화 전략 수립
-  - [ ] 데이터 수집 시 캐시 무효화 로직
-  - [ ] 종목 정보 변경 시 캐시 무효화 로직
-  - [ ] 캐시 무효화 헬퍼 함수 구현
+- [x] Redis 연결 설정
+  - [x] `app/config.py` - Redis 설정 추가
+  - [x] `app/utils/redis.py` - Redis 클라이언트 유틸리티 생성
+  - [x] 환경 변수 설정 (.env.example 업데이트)
+  - [x] Redis 연결 테스트
+- [x] 캐시 유틸리티 함수 구현
+  - [x] `app/utils/cache.py` - 캐시 헬퍼 함수 생성
+    - [x] `get_cache(key)` - 캐시 조회
+    - [x] `set_cache(key, value, ttl)` - 캐시 저장
+    - [x] `delete_cache(key)` - 캐시 삭제
+    - [x] `clear_cache_pattern(pattern)` - 패턴 기반 캐시 삭제
+- [x] 캐시 데코레이터 구현
+  - [x] `app/utils/cache.py` - `@cache_result` 데코레이터 구현
+  - [x] TTL 설정 가능한 캐시 데코레이터
+  - [x] 캐시 키 생성 전략
+- [x] 캐시 무효화 전략 수립
+  - [x] 데이터 수집 시 캐시 무효화 로직
+  - [x] 종목 정보 변경 시 캐시 무효화 로직
+  - [x] 캐시 무효화 헬퍼 함수 구현
 
 ### 1.4 기본 API 엔드포인트 구현
 - [ ] Health Check 엔드포인트

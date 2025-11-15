@@ -5,7 +5,7 @@ K-SectorRadar 백엔드 애플리케이션
 ## 기술 스택
 
 - **Framework**: FastAPI 0.104.x+
-- **Database**: PostgreSQL/MySQL (프로덕션), SQLite (개발)
+- **Database**: MySQL (개발 및 프로덕션)
 - **ORM**: SQLAlchemy 2.0+
 - **Cache**: Redis 7.x+
 - **Scheduler**: APScheduler 3.10.x+
@@ -27,20 +27,50 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-### 3. 환경 변수 설정
+### 3. 데이터베이스 설정
+
+#### 3.1 MySQL 설치 및 데이터베이스 생성
+
+```bash
+# MySQL 설치 (macOS)
+brew install mysql
+brew services start mysql
+
+# MySQL 설치 (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install mysql-server
+sudo systemctl start mysql
+
+# MySQL 접속
+mysql -u root -p
+
+# 데이터베이스 생성
+CREATE DATABASE sectorradar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# 사용자 생성 및 권한 부여 (선택사항)
+CREATE USER 'sectorradar'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON sectorradar.* TO 'sectorradar'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+#### 3.2 환경 변수 설정
 
 `.env` 파일을 생성하고 다음 내용을 추가하세요:
 
 ```bash
 # Database Configuration
-# SQLite (Development)
-DATABASE_URL=sqlite:///./data/sectorradar.db
+# MySQL (Development & Production)
+DATABASE_URL=mysql+pymysql://root:password@localhost:3306/sectorradar
 
-# PostgreSQL (Production)
+# 또는 사용자 계정 사용 시
+# DATABASE_URL=mysql+pymysql://sectorradar:your_password@localhost:3306/sectorradar
+
+# PostgreSQL (Alternative)
 # DATABASE_URL=postgresql://user:password@localhost:5432/sectorradar
 
-# MySQL (Production)
-# DATABASE_URL=mysql+pymysql://user:password@localhost:3306/sectorradar
+# SQLite (Alternative - for testing only)
+# DATABASE_URL=sqlite:///./data/sectorradar.db
 
 # Redis Configuration
 REDIS_URL=redis://localhost:6379/0
