@@ -1,6 +1,6 @@
 """주식 정보 모델"""
 
-from sqlalchemy import Column, String, Numeric, DateTime, CheckConstraint
+from sqlalchemy import Column, String, Numeric, DateTime, CheckConstraint, Index
 from sqlalchemy.sql import func
 from datetime import datetime
 
@@ -28,6 +28,8 @@ class Stock(Base):
 
     __table_args__ = (
         CheckConstraint("type IN ('STOCK', 'ETF')", name="check_type"),
+        Index("idx_type", "type"),
+        Index("idx_theme", "theme"),
     )
 
     def __repr__(self):

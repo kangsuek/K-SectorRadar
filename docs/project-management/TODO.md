@@ -23,25 +23,25 @@
 - [x] Frontend 디렉토리 구조 및 초기 파일 생성
 
 ### 1.2 데이터베이스 스키마 구현
-- [ ] SQLAlchemy 모델 정의
-  - [ ] `app/models/stock.py` - Stock 모델 완성 (이미 일부 구현됨)
-  - [ ] `app/models/price.py` - Price 모델 완성 (이미 일부 구현됨)
-  - [ ] `app/models/trading_trend.py` - TradingTrend 모델 완성 (이미 일부 구현됨)
-  - [ ] `app/models/news.py` - News 모델 완성 (이미 일부 구현됨)
-  - [ ] `app/models/__init__.py` - 모델 export 정리
-- [ ] 데이터베이스 연결 설정
-  - [ ] `app/database.py` - PostgreSQL/MySQL 연결 설정
-  - [ ] 환경 변수 설정 (.env.example 업데이트)
-  - [ ] SQLite 개발 환경 지원 (선택사항)
-  - [ ] 데이터베이스 연결 풀 설정
-- [ ] 마이그레이션 시스템 구축
-  - [ ] Alembic 초기화 및 설정
-  - [ ] 초기 마이그레이션 파일 생성
-  - [ ] 마이그레이션 실행 스크립트 작성
-- [ ] 데이터베이스 초기화 및 시드
-  - [ ] `app/database.py` - `init_db()` 함수 구현
-  - [ ] 초기 종목 데이터 시드 스크립트 작성
-  - [ ] `config/stocks.json` 데이터를 DB에 로드하는 로직 구현
+- [x] SQLAlchemy 모델 정의
+  - [x] `app/models/stock.py` - Stock 모델 완성 (인덱스 추가)
+  - [x] `app/models/price.py` - Price 모델 완성
+  - [x] `app/models/trading_trend.py` - TradingTrend 모델 완성
+  - [x] `app/models/news.py` - News 모델 완성
+  - [x] `app/models/__init__.py` - 모델 export 정리
+- [x] 데이터베이스 연결 설정
+  - [x] `app/database.py` - PostgreSQL/MySQL 연결 설정
+  - [x] 환경 변수 설정 (README.md에 예시 추가)
+  - [x] SQLite 개발 환경 지원
+  - [x] 데이터베이스 연결 풀 설정
+- [x] 마이그레이션 시스템 구축
+  - [x] Alembic 초기화 및 설정
+  - [x] 초기 마이그레이션 파일 생성 (사용자 실행 필요)
+  - [x] 마이그레이션 실행 스크립트 작성 (`scripts/run_migrations.py`)
+- [x] 데이터베이스 초기화 및 시드
+  - [x] `app/database.py` - `init_db()` 함수 구현
+  - [x] 초기 종목 데이터 시드 스크립트 작성 (`scripts/seed_stocks.py`)
+  - [x] `config/stocks.json` 데이터를 DB에 로드하는 로직 구현
 
 ### 1.3 Redis 캐싱 레이어 구현
 - [ ] Redis 연결 설정
