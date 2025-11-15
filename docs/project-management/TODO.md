@@ -127,14 +127,23 @@
 - SQLite 외래키 제약조건 활성화
 - MySQL/SQLite 호환 AutoIncrementBigInteger 타입 구현
 
-### 1.6 문서화
-- [ ] API 명세서 업데이트
-  - [ ] `docs/API_SPECIFICATION.md` - Phase 1 엔드포인트 문서화
-- [ ] 데이터베이스 스키마 문서 업데이트
-  - [ ] `docs/DATABASE_SCHEMA.md` - 최종 스키마 반영
-- [ ] 개발 가이드 업데이트
-  - [ ] `docs/DEVELOPMENT_GUIDE.md` - 데이터베이스 설정 가이드 추가
-  - [ ] `docs/DEVELOPMENT_GUIDE.md` - Redis 설정 가이드 추가
+### 1.6 문서화 (완료)
+- [x] API 명세서 업데이트
+  - [x] `docs/eng/03-Data-API-Design-Specification.md` - Phase 1 엔드포인트 문서화
+  - [x] Health Check API 추가
+  - [x] Price API 경로 수정 및 응답 형식 업데이트
+  - [x] Phase 1/Phase 2 구분 표시
+- [x] 데이터베이스 스키마 문서 업데이트
+  - [x] `docs/eng/03-Data-API-Design-Specification.md` - 최종 스키마 반영
+  - [x] SQLAlchemy 모델과 일치하도록 COMMENT 추가
+  - [x] 데이터 타입 정확성 검증
+- [x] 개발 가이드 작성
+  - [x] `docs/eng/DEVELOPMENT_GUIDE.md` - 완전한 개발 가이드 작성
+  - [x] 데이터베이스 설정 가이드 (MySQL, PostgreSQL, SQLite)
+  - [x] Redis 설정 및 사용 가이드
+  - [x] 테스트 실행 가이드
+  - [x] 마이그레이션 가이드
+  - [x] 문제 해결 가이드
 
 ## Phase 2: 데이터 수집 기능
 **⚠️ Phase 1의 모든 테스트가 통과한 후에만 시작합니다.**

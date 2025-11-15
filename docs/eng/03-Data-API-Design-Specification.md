@@ -176,73 +176,81 @@ This document includes data model definitions, database schema design, API endpo
 #### 3.2.1 stocks Table
 ```sql
 CREATE TABLE stocks (
-  ticker VARCHAR(10) PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  type VARCHAR(10) NOT NULL CHECK (type IN ('STOCK', 'ETF')),
-  theme VARCHAR(200),
-  fee DECIMAL(10, 6),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  ticker VARCHAR(10) PRIMARY KEY COMMENT '종목 코드',
+  name VARCHAR(100) NOT NULL COMMENT '종목명',
+  type VARCHAR(10) NOT NULL CHECK (type IN ('STOCK', 'ETF')) COMMENT '종목 유형 (STOCK/ETF)',
+  theme VARCHAR(200) COMMENT '테마 분류',
+  fee DECIMAL(10, 6) COMMENT '수수료 (ETF만 해당)',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
   INDEX idx_type (type),
   INDEX idx_theme (theme)
 );
 ```
 
+> **Note**: Implemented in Phase 1 with SQLAlchemy models
+
 #### 3.2.2 prices Table
 ```sql
 CREATE TABLE prices (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  ticker VARCHAR(10) NOT NULL,
-  date DATE NOT NULL,
-  timestamp TIMESTAMP NOT NULL,
-  current_price DECIMAL(12, 2) NOT NULL,
-  change_rate DECIMAL(6, 2),
-  change_amount DECIMAL(12, 2),
-  open_price DECIMAL(12, 2),
-  high_price DECIMAL(12, 2),
-  low_price DECIMAL(12, 2),
-  volume BIGINT,
-  weekly_change_rate DECIMAL(6, 2),
-  previous_close DECIMAL(12, 2),
+  id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '고유 ID',
+  ticker VARCHAR(10) NOT NULL COMMENT '종목 코드',
+  date DATE NOT NULL COMMENT '거래일',
+  timestamp TIMESTAMP NOT NULL COMMENT '수집 시각',
+  current_price DECIMAL(12, 2) NOT NULL COMMENT '현재가',
+  change_rate DECIMAL(6, 2) COMMENT '등락률 (%)',
+  change_amount DECIMAL(12, 2) COMMENT '등락액',
+  open_price DECIMAL(12, 2) COMMENT '시가',
+  high_price DECIMAL(12, 2) COMMENT '고가',
+  low_price DECIMAL(12, 2) COMMENT '저가',
+  volume DECIMAL(20, 0) COMMENT '거래량',
+  weekly_change_rate DECIMAL(6, 2) COMMENT '주간 등락률 (%)',
+  previous_close DECIMAL(12, 2) COMMENT '전일 종가',
   INDEX idx_ticker_date (ticker, date),
   INDEX idx_ticker_timestamp (ticker, timestamp),
   FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON DELETE CASCADE
 );
 ```
+
+> **Note**: Implemented in Phase 1 with SQLAlchemy models
 
 #### 3.2.3 trading_trends Table
 ```sql
 CREATE TABLE trading_trends (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  ticker VARCHAR(10) NOT NULL,
-  date DATE NOT NULL,
-  timestamp TIMESTAMP NOT NULL,
-  individual BIGINT,
-  institution BIGINT,
-  foreign_investor BIGINT,
-  total BIGINT,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '고유 ID',
+  ticker VARCHAR(10) NOT NULL COMMENT '종목 코드',
+  date DATE NOT NULL COMMENT '거래일',
+  timestamp TIMESTAMP NOT NULL COMMENT '수집 시각',
+  individual DECIMAL(20, 0) COMMENT '개인 투자자 거래량 (순매수: +, 순매도: -)',
+  institution DECIMAL(20, 0) COMMENT '기관 투자자 거래량',
+  foreign_investor DECIMAL(20, 0) COMMENT '외국인 투자자 거래량',
+  total DECIMAL(20, 0) COMMENT '총 거래량',
   INDEX idx_ticker_date (ticker, date),
   INDEX idx_ticker_timestamp (ticker, timestamp),
   FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON DELETE CASCADE
 );
 ```
 
+> **Note**: Implemented in Phase 1 with SQLAlchemy models
+
 #### 3.2.4 news Table
 ```sql
 CREATE TABLE news (
-  id VARCHAR(50) PRIMARY KEY,
-  ticker VARCHAR(10) NOT NULL,
-  title VARCHAR(500) NOT NULL,
-  url VARCHAR(1000) NOT NULL,
-  source VARCHAR(100),
-  published_at TIMESTAMP,
-  collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  id VARCHAR(50) PRIMARY KEY COMMENT '고유 ID',
+  ticker VARCHAR(10) NOT NULL COMMENT '관련 종목 코드',
+  title VARCHAR(500) NOT NULL COMMENT '뉴스 제목',
+  url VARCHAR(1000) NOT NULL COMMENT '뉴스 URL',
+  source VARCHAR(100) COMMENT '출처',
+  published_at TIMESTAMP COMMENT '발행 시각',
+  collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '수집 시각',
   INDEX idx_ticker_published (ticker, published_at),
   INDEX idx_published_at (published_at),
   FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON DELETE CASCADE,
-  UNIQUE KEY uk_url (url(255))
+  CONSTRAINT uk_url UNIQUE (url)
 );
 ```
+
+> **Note**: Implemented in Phase 1 with SQLAlchemy models
 
 ---
 
@@ -256,7 +264,17 @@ CREATE TABLE news (
 
 ### 4.2 API Endpoints
 
-#### 4.2.1 Stock List Retrieval
+> **Phase 1 Implementation Status:**
+> - ✅ 4.2.1 Stock List Retrieval - **Implemented with caching**
+> - ✅ 4.2.2 Stock Detail Retrieval - **Implemented with caching**
+> - ✅ 4.2.3 Price Data Retrieval - **Implemented with caching** (Path: `/api/prices/{ticker}`)
+> - ✅ 4.2.8 Health Check - **Implemented**
+> - ⏸️ 4.2.4 Trading Trend Retrieval - **Planned for Phase 2**
+> - ⏸️ 4.2.5 News Retrieval - **Planned for Phase 2**
+> - ⏸️ 4.2.6 Chart Data Retrieval - **Planned for Phase 2**
+> - ⏸️ 4.2.7 Data Refresh - **Planned for Phase 2**
+
+#### 4.2.1 Stock List Retrieval ✅
 - **Method**: `GET`
 - **Path**: `/api/stocks`
 - **Description**: Retrieves the list of all stocks.
@@ -291,10 +309,11 @@ CREATE TABLE news (
 }
 ```
 
-#### 4.2.2 Stock Detail Retrieval
+#### 4.2.2 Stock Detail Retrieval ✅
 - **Method**: `GET`
 - **Path**: `/api/stocks/{ticker}`
 - **Description**: Retrieves detailed information of a specific stock.
+- **Cache TTL**: 1 hour
 - **Path Parameters**:
   | Parameter | Type | Required | Description |
   |:---|:---|:---|:---|
@@ -318,10 +337,11 @@ CREATE TABLE news (
 }
 ```
 
-#### 4.2.3 Price Data Retrieval
+#### 4.2.3 Price Data Retrieval ✅
 - **Method**: `GET`
-- **Path**: `/api/stocks/{ticker}/price`
-- **Description**: Retrieves price data of a specific stock.
+- **Path**: `/api/prices/{ticker}`
+- **Description**: Retrieves price data of a specific stock with date range filtering.
+- **Cache TTL**: 30 minutes
 - **Path Parameters**:
   | Parameter | Type | Required | Description |
   |:---|:---|:---|:---|
@@ -330,35 +350,46 @@ CREATE TABLE news (
 - **Query Parameters**:
   | Parameter | Type | Required | Description |
   |:---|:---|:---|:---|
-  | `date` | string | - | Specific date query (YYYY-MM-DD, default: latest) |
+  | `start_date` | string | - | Start date (YYYY-MM-DD format) |
+  | `end_date` | string | - | End date (YYYY-MM-DD format) |
+  | `limit` | number | - | Page size (optional) |
+  | `offset` | number | - | Offset (default: 0) |
 
 - **Response Example**:
 ```json
 {
   "success": true,
   "data": {
-    "ticker": "034020",
-    "date": "2025-11-13",
-    "timestamp": "2025-11-13T15:30:00Z",
-    "currentPrice": 83100,
-    "changeRate": 2.5,
-    "changeAmount": 2025,
-    "openPrice": 82000,
-    "highPrice": 83500,
-    "lowPrice": 81800,
-    "volume": 7900000,
-    "weeklyChangeRate": 5.2,
-    "previousClose": 81075
+    "prices": [
+      {
+        "ticker": "034020",
+        "date": "2025-11-13",
+        "timestamp": "2025-11-13T15:30:00Z",
+        "currentPrice": 83100,
+        "changeRate": 2.5,
+        "changeAmount": 2025,
+        "openPrice": 82000,
+        "highPrice": 83500,
+        "lowPrice": 81800,
+        "volume": 7900000,
+        "weeklyChangeRate": 5.2,
+        "previousClose": 81075
+      }
+    ],
+    "total": 100,
+    "limit": null,
+    "offset": 0
   },
   "message": "",
   "timestamp": "2025-11-13T21:23:43Z"
 }
 ```
 
-#### 4.2.4 Trading Trend Retrieval
+#### 4.2.4 Trading Trend Retrieval ⏸️
 - **Method**: `GET`
 - **Path**: `/api/stocks/{ticker}/trading`
 - **Description**: Retrieves trading trend data of a specific stock.
+- **Status**: Planned for Phase 2
 - **Path Parameters**:
   | Parameter | Type | Required | Description |
   |:---|:---|:---|:---|
@@ -387,10 +418,11 @@ CREATE TABLE news (
 }
 ```
 
-#### 4.2.5 News Retrieval
+#### 4.2.5 News Retrieval ⏸️
 - **Method**: `GET`
 - **Path**: `/api/stocks/{ticker}/news`
 - **Description**: Retrieves news list of a specific stock.
+- **Status**: Planned for Phase 2
 - **Path Parameters**:
   | Parameter | Type | Required | Description |
   |:---|:---|:---|:---|
@@ -427,10 +459,11 @@ CREATE TABLE news (
 }
 ```
 
-#### 4.2.6 Chart Data Retrieval
+#### 4.2.6 Chart Data Retrieval ⏸️
 - **Method**: `GET`
 - **Path**: `/api/stocks/{ticker}/chart`
 - **Description**: Retrieves chart data of a specific stock.
+- **Status**: Planned for Phase 2
 - **Path Parameters**:
   | Parameter | Type | Required | Description |
   |:---|:---|:---|:---|
@@ -464,10 +497,11 @@ CREATE TABLE news (
 }
 ```
 
-#### 4.2.7 Data Refresh
+#### 4.2.7 Data Refresh ⏸️
 - **Method**: `POST`
 - **Path**: `/api/refresh`
 - **Description**: Manually refreshes data for all stocks.
+- **Status**: Planned for Phase 2
 - **Request Body**:
 ```json
 {
@@ -491,6 +525,30 @@ CREATE TABLE news (
   "timestamp": "2025-11-13T21:23:43Z"
 }
 ```
+
+#### 4.2.8 Health Check ✅
+- **Method**: `GET`
+- **Path**: `/api/health`
+- **Description**: Checks the health status of the server, database, and Redis connections.
+- **Status**: Implemented in Phase 1
+
+- **Response Example**:
+```json
+{
+  "status": "healthy",
+  "database": "connected",
+  "redis": "connected",
+  "timestamp": "2025-11-13T21:23:43Z"
+}
+```
+
+- **Response Fields**:
+  | Field | Type | Description |
+  |:---|:---|:---|
+  | `status` | string | Overall health status ("healthy" or "unhealthy") |
+  | `database` | string | Database connection status ("connected" or "disconnected") |
+  | `redis` | string | Redis connection status ("connected" or "disconnected") |
+  | `timestamp` | string (ISO 8601) | Health check timestamp |
 
 ### 4.3 API Response Format
 
