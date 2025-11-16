@@ -2,28 +2,17 @@
 
 ## 1. Document Overview
 
-### 1.1 Purpose
-This document defines the REST API endpoints for the K-SectorRadar project.
+This document defines the REST API endpoints for the K-SectorRadar project, including request/response formats, error handling, and caching strategies.
 
-### 1.2 Scope
-This document includes API endpoint definitions, request/response formats, error handling, and caching strategies.
-
-### 1.3 References
-- Data Models: See `docs/eng/05-Data-API-Design-Specification.md` (Section 2)
-- Database Schema: See `docs/eng/04-DATABASE_SCHEMA.md`
-- Requirements Specification: `docs/eng/01-Requirements-Specification.md`
+**References**: Data Models (`05-Data-API-Design-Specification.md`), Database Schema (`04-DATABASE_SCHEMA.md`), Requirements (`01-Requirements-Specification.md`)
 
 ---
 
 ## 2. API Overview
 
-### 2.1 Base Information
-- **Base URL**: `/api`
-- **Authentication**: No authentication in initial version (expandable in future)
-- **Response Format**: JSON
-- **Character Encoding**: UTF-8
+**Base URL**: `/api` | **Format**: JSON | **Encoding**: UTF-8 | **Auth**: None (expandable)
 
-### 2.2 Response Format
+### 2.1 Response Format
 
 #### Success Response
 ```json
@@ -156,6 +145,135 @@ This document includes API endpoint definitions, request/response formats, error
 - `404 NOT_FOUND`: Stock with ticker '{ticker}' not found
 
 **Caching**: TTL 1 hour
+
+---
+
+#### POST /api/stocks
+**Description**: Creates a new stock in the database (Admin only).
+
+**Request Body**:
+```json
+{
+  "ticker": "034020",
+  "name": "Doosan Enerbility",
+  "type": "STOCK",
+  "theme": "Nuclear/Power Plant/Energy",
+  "fee": null
+}
+```
+
+| Field | Type | Required | Description |
+|:---|:---|:---|:---|
+| `ticker` | string | ✓ | Stock code (unique) |
+| `name` | string | ✓ | Stock name |
+| `type` | string | ✓ | Stock type (STOCK/ETF) |
+| `theme` | string | - | Theme classification |
+| `fee` | number | - | Fee (ETF only) |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "ticker": "034020",
+    "name": "Doosan Enerbility",
+    "type": "STOCK",
+    "theme": "Nuclear/Power Plant/Energy",
+    "fee": null,
+    "createdAt": "2025-11-14T10:30:00Z",
+    "updatedAt": "2025-11-14T10:30:00Z"
+  },
+  "message": "Stock '034020' created successfully",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `400 BAD_REQUEST`: Stock with ticker '{ticker}' already exists (DUPLICATE_TICKER)
+- `400 BAD_REQUEST`: Invalid stock type. Must be 'STOCK' or 'ETF' (INVALID_STOCK_TYPE)
+- `500 INTERNAL_ERROR`: Failed to create stock
+
+**Status Code**: 201 Created
+
+**Note**: This endpoint invalidates all stock list caches.
+
+---
+
+#### PUT /api/stocks/{ticker}
+**Description**: Updates an existing stock's information (Admin only).
+
+**Path Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `ticker` | string | ✓ | Stock code |
+
+**Request Body**:
+```json
+{
+  "name": "Doosan Enerbility (Updated)",
+  "theme": "Nuclear/Power Plant/Energy/Updated"
+}
+```
+
+| Field | Type | Required | Description |
+|:---|:---|:---|:---|
+| `name` | string | - | Stock name |
+| `type` | string | - | Stock type (STOCK/ETF) |
+| `theme` | string | - | Theme classification |
+| `fee` | number | - | Fee (ETF only) |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "ticker": "034020",
+    "name": "Doosan Enerbility (Updated)",
+    "type": "STOCK",
+    "theme": "Nuclear/Power Plant/Energy/Updated",
+    "fee": null,
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-11-14T10:30:00Z"
+  },
+  "message": "Stock '034020' updated successfully",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `404 NOT_FOUND`: Stock with ticker '{ticker}' not found
+- `400 BAD_REQUEST`: Invalid stock type. Must be 'STOCK' or 'ETF' (INVALID_STOCK_TYPE)
+- `500 INTERNAL_ERROR`: Failed to update stock
+
+**Note**: Only provided fields are updated. This endpoint invalidates related caches.
+
+---
+
+#### DELETE /api/stocks/{ticker}
+**Description**: Deletes a stock from the database (Admin only).
+
+**Path Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `ticker` | string | ✓ | Stock code |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "ticker": "034020"
+  },
+  "message": "Stock '034020' deleted successfully",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `404 NOT_FOUND`: Stock with ticker '{ticker}' not found
+- `500 INTERNAL_ERROR`: Failed to delete stock
+
+**Note**: Deleting a stock may require separate handling of related price data, trading trend data, and news data. This endpoint invalidates related caches.
 
 ---
 
@@ -299,6 +417,199 @@ This document includes API endpoint definitions, request/response formats, error
 
 ---
 
+### 3.8 Data Collection (Phase 2)
+
+#### POST /api/data/collect/prices/{ticker}
+**Description**: Collects price data from Naver Finance for a specific stock and saves it to the database.
+
+**Path Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `ticker` | string | ✓ | Stock code |
+
+**Query Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `days` | number | - | Number of days to collect (default: 10, min: 1, max: 365) |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "ticker": "487240",
+    "saved_count": 10,
+    "days": 10
+  },
+  "message": "Price data collected successfully. 10 records saved.",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `404 NOT_FOUND`: Stock with ticker '{ticker}' not found
+- `400 INVALID_PARAMETER`: Invalid days parameter (must be between 1 and 365)
+- `500 INTERNAL_ERROR`: Failed to collect price data
+
+---
+
+#### POST /api/data/collect/trading/{ticker}
+**Description**: Collects trading trend data from Naver Finance for a specific stock and saves it to the database.
+
+**Path Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `ticker` | string | ✓ | Stock code |
+
+**Query Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `days` | number | - | Number of days to collect (default: 10, min: 1, max: 365) |
+| `start_date` | string | - | Start date (YYYY-MM-DD format, optional) |
+| `end_date` | string | - | End date (YYYY-MM-DD format, optional) |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "ticker": "487240",
+    "saved_count": 10,
+    "days": 10,
+    "start_date": "2025-11-01",
+    "end_date": "2025-11-10"
+  },
+  "message": "Trading flow data collected successfully. 10 records saved.",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `404 NOT_FOUND`: Stock with ticker '{ticker}' not found
+- `400 INVALID_DATE_FORMAT`: Invalid date format. Expected YYYY-MM-DD
+- `400 INVALID_DATE_RANGE`: start_date must be before or equal to end_date
+- `500 INTERNAL_ERROR`: Failed to collect trading flow data
+
+---
+
+#### POST /api/data/collect/news/{ticker}
+**Description**: Collects news data from Naver Finance for a specific stock and saves it to the database.
+
+**Path Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `ticker` | string | ✓ | Stock code |
+
+**Query Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `max_items` | number | - | Maximum number of news items to collect (default: 50, min: 1, max: 200) |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "ticker": "487240",
+    "saved_count": 50,
+    "max_items": 50
+  },
+  "message": "News data collected successfully. 50 records saved.",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `404 NOT_FOUND`: Stock with ticker '{ticker}' not found
+- `400 INVALID_PARAMETER`: Invalid max_items parameter (must be between 1 and 200)
+- `500 INTERNAL_ERROR`: Failed to collect news data
+
+---
+
+### 3.9 Scheduler Management (Phase 2)
+
+#### GET /api/scheduler/status
+**Description**: Retrieves the current status of the data collection scheduler.
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "is_running": true,
+    "interval_seconds": 30,
+    "next_run_time": "2025-11-14T10:30:30Z",
+    "last_run_time": "2025-11-14T10:30:00Z",
+    "last_run_status": "success",
+    "last_run_error": null
+  },
+  "message": "Scheduler status retrieved successfully",
+  "timestamp": "2025-11-14T10:30:05Z"
+}
+```
+
+**Status Fields**:
+- `is_running`: Whether the scheduler is currently running
+- `interval_seconds`: Data collection interval in seconds
+- `next_run_time`: Next scheduled run time (ISO 8601 format)
+- `last_run_time`: Last execution time (ISO 8601 format)
+- `last_run_status`: Status of last run ("success" or "error")
+- `last_run_error`: Error message if last run failed (null if successful)
+
+**Error Responses**:
+- `500 INTERNAL_ERROR`: Failed to get scheduler status
+
+---
+
+#### POST /api/scheduler/start
+**Description**: Starts the data collection scheduler. If already running, restarts it with the specified interval.
+
+**Query Parameters**:
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `interval_seconds` | number | - | Data collection interval in seconds (default: 30, min: 10, max: 3600) |
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "is_running": true,
+    "interval_seconds": 30,
+    "message": "Scheduler started successfully"
+  },
+  "message": "Scheduler started successfully",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `400 INVALID_PARAMETER`: Invalid interval_seconds parameter (must be between 10 and 3600)
+- `500 INTERNAL_ERROR`: Failed to start scheduler
+
+---
+
+#### POST /api/scheduler/stop
+**Description**: Stops the running data collection scheduler.
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "data": {
+    "is_running": false,
+    "message": "Scheduler stopped successfully"
+  },
+  "message": "Scheduler stopped successfully",
+  "timestamp": "2025-11-14T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- `500 INTERNAL_ERROR`: Failed to stop scheduler
+
+---
+
 ## 4. Caching Strategy
 
 ### 4.1 Cache Structure (Redis)
@@ -367,13 +678,25 @@ All endpoints are automatically documented with request/response examples.
 ### Version 1.0.0 (Phase 1.4)
 - Health Check endpoint
 - Stock list and detail endpoints
+- Stock management endpoints (POST, PUT, DELETE) - Admin only
 - Price data endpoint with date range filtering
 - Basic error handling
 - Redis caching implementation
 
-### Planned (Phase 2+)
-- Trading trend endpoint
-- News endpoint
+### Version 2.0.0 (Phase 2)
+- Data collection endpoints
+  - Price data collection API (`POST /api/data/collect/prices/{ticker}`)
+  - Trading trend data collection API (`POST /api/data/collect/trading/{ticker}`)
+  - News data collection API (`POST /api/data/collect/news/{ticker}`)
+- Scheduler management endpoints
+  - Scheduler status API (`GET /api/scheduler/status`)
+  - Scheduler start/stop APIs (`POST /api/scheduler/start`, `POST /api/scheduler/stop`)
+- Data validation utilities
+- Automatic data collection scheduler (30-second interval)
+
+### Planned (Phase 3+)
+- Trading trend endpoint (GET)
+- News endpoint (GET)
 - Chart data endpoint
 - Data refresh endpoint
 

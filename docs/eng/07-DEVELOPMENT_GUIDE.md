@@ -2,196 +2,100 @@
 
 ## 1. Document Overview
 
-### 1.1 Purpose
-This document provides a comprehensive guide for setting up and developing the K-SectorRadar project.
+This guide covers setup and development for K-SectorRadar: prerequisites, database/Redis setup, environment configuration, testing, and migrations.
 
-### 1.2 Scope
-This guide covers:
-- Prerequisites and system requirements
-- Database setup (MySQL - Primary, PostgreSQL - Alternative, SQLite - Testing only)
-- Redis setup and configuration
-- Environment variable configuration
-- Development environment setup
-- Testing and migration procedures
-
-### 1.3 References
-- API Specification: `docs/eng/03-API_SPECIFICATION.md`
-- Database Schema: `docs/eng/04-DATABASE_SCHEMA.md`
-- Requirements Specification: `docs/eng/01-Requirements-Specification.md`
+**References**: API Spec (`03-API_SPECIFICATION.md`), DB Schema (`04-DATABASE_SCHEMA.md`), Requirements (`01-Requirements-Specification.md`)
 
 ---
 
 ## 2. Prerequisites
 
-### 2.1 Required Software
-- **Python**: 3.10 or higher
-- **Node.js**: 18 or higher (for frontend)
-- **Database**: MySQL 8.0+ (required for development and production)
-- **Redis**: 7.x or higher
-- **Git**: Latest version
+**Required**: Python 3.10+, Node.js 18+ (frontend), MySQL 8.0+ (primary), Redis 7.x+, Git
 
-**Note**: PostgreSQL is supported as an alternative, and SQLite can be used for testing only.
+**Optional**: Docker, Postman/Insomnia, VS Code
 
-### 2.2 Optional Software
-- **Docker & Docker Compose**: For containerized development
-- **Postman/Insomnia**: For API testing
-- **VS Code**: Recommended IDE with Python and TypeScript extensions
+**Note**: PostgreSQL supported as alternative, SQLite for testing only.
 
 ---
 
 ## 3. Database Setup
 
-**⚠️ Important**: MySQL is the **primary and recommended** database for both development and production environments. PostgreSQL is supported as an alternative, and SQLite should only be used for testing.
+**⚠️ MySQL is primary** (dev & prod). PostgreSQL supported as alternative. SQLite for testing only.
 
-### 3.1 MySQL Setup (Primary - Development & Production)
+### 3.1 MySQL Setup
 
-#### 3.1.1 Installation
-**macOS (Homebrew)**:
+**Installation**:  
+- macOS: `brew install mysql && brew services start mysql`
+- Ubuntu/Debian: `sudo apt install mysql-server && sudo systemctl start mysql`
+- Windows: Download from [mysql.com](https://dev.mysql.com/downloads/installer/)
+
+**Database Creation**:
 ```bash
-brew install mysql
-brew services start mysql
-```
-
-**Ubuntu/Debian**:
-```bash
-sudo apt update
-sudo apt install mysql-server
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
-
-**Windows**:
-Download MySQL Installer from [mysql.com](https://dev.mysql.com/downloads/installer/)
-
-#### 3.1.2 Database Creation
-```bash
-# MySQL 접속
 mysql -u root -p
-
-# 데이터베이스 생성
 CREATE DATABASE sectorradar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-# 사용자 생성 및 권한 부여 (선택사항)
-CREATE USER 'sectorradar'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON sectorradar.* TO 'sectorradar'@'localhost';
-FLUSH PRIVILEGES;
-
-# 종료
+# Optional: CREATE USER 'sectorradar'@'localhost' IDENTIFIED BY 'password';
+# Optional: GRANT ALL PRIVILEGES ON sectorradar.* TO 'sectorradar'@'localhost';
 EXIT;
 ```
 
-#### 3.1.3 Connection String Format
-```
-mysql+pymysql://username:password@localhost:3306/sectorradar
-```
+**Connection String**: `mysql+pymysql://username:password@localhost:3306/sectorradar`
 
-**Example**:
-```
-mysql+pymysql://root:password@localhost:3306/sectorradar
-```
+### 3.2 PostgreSQL (Alternative)
 
-### 3.2 PostgreSQL Setup (Optional Alternative)
+**Connection String**: `postgresql://username:password@localhost:5432/sectorradar`  
+See [PostgreSQL docs](https://www.postgresql.org/docs/) for installation.
 
-**Note**: PostgreSQL is supported but not recommended. Use only if you have specific requirements.
+### 3.3 SQLite (Testing Only)
 
-**Connection String**: `postgresql://username:password@localhost:5432/sectorradar`
-
-For installation and setup details, refer to [PostgreSQL official documentation](https://www.postgresql.org/docs/).
-
-### 3.3 SQLite Setup (Testing Only)
-
-**⚠️ Warning**: SQLite is for testing only. Do not use for development or production.
-
-**Connection String**: `sqlite:///./database/sectorradar.db`
-
-No installation required. The database file is created automatically.
+**Connection String**: `sqlite:///./database/sectorradar.db`  
+⚠️ Testing only - not for dev/prod.
 
 ### 3.4 Database Initialization
 
 ```bash
 cd backend
-python -m app.database
+python -m app.database  # Creates tables and seeds from config/stocks.json
+# Or: python scripts/seed_stocks.py  # Seed only
 ```
-
-This creates all tables and seeds initial stock data from `config/stocks.json`.
-
-**Alternative**: Use `python scripts/seed_stocks.py` to seed data only.
 
 ---
 
 ## 4. Redis Setup
 
-### 4.1 Installation
+**Installation**:  
+- macOS: `brew install redis && brew services start redis`
+- Ubuntu/Debian: `sudo apt install redis-server && sudo systemctl start redis-server`
+- Windows: Download from [redis.io](https://redis.io/download) or use WSL2
+- Docker: `docker run -d -p 6379:6379 --name redis redis:7-alpine`
 
-**macOS**: `brew install redis && brew services start redis`  
-**Ubuntu/Debian**: `sudo apt install redis-server && sudo systemctl start redis-server`  
-**Windows**: Download from [redis.io](https://redis.io/download) or use WSL2  
-**Docker**: `docker run -d -p 6379:6379 --name redis redis:7-alpine`
+**Connection String**: `redis://localhost:6379/0`  
+**Test**: `redis-cli ping` (should return `PONG`)
 
-### 4.2 Configuration
-
-**Connection String**: `redis://localhost:6379/0`
-
-**Test Connection**: `redis-cli ping` (should return `PONG`)
-
-### 4.3 Verification
-
-The application automatically tests Redis connection on startup. If Redis is unavailable, the app will run but caching will be disabled.
+**Note**: App auto-tests Redis on startup. If unavailable, app runs but caching is disabled.
 
 ---
 
 ## 5. Environment Variables
 
-### 5.1 Backend Environment Variables
+### 5.1 Backend (.env in `backend/`)
 
-Create a `.env` file in the `backend/` directory:
-
-```bash
-cd backend
-cp .env.example .env  # If .env.example exists
-# Or create .env manually
-```
-
-#### 5.1.1 Required Variables
-
+**Required**:
 ```env
-# Database (MySQL - Primary, required for development & production)
 DATABASE_URL=mysql+pymysql://root:password@localhost:3306/sectorradar
-
-# Alternative databases (not recommended for production):
-# PostgreSQL: DATABASE_URL=postgresql://postgres:password@localhost:5432/sectorradar
-# SQLite (testing only): DATABASE_URL=sqlite:///./database/sectorradar.db
-
-# Redis
 REDIS_URL=redis://localhost:6379/0
 ```
 
-#### 5.1.2 Optional Variables
-
+**Optional**:
 ```env
-# API Settings
 API_HOST=0.0.0.0
 API_PORT=8000
-API_RELOAD=true
-
-# CORS
 CORS_ORIGINS=["http://localhost:5173","http://localhost:3000"]
-
-# Data Collection
 AUTO_REFRESH_INTERVAL=30
-NAVER_FINANCE_BASE_URL=https://finance.naver.com
-NAVER_NEWS_BASE_URL=https://search.naver.com
-
-# Logging
 LOG_LEVEL=INFO
-
-# Environment
 ENVIRONMENT=development
 ```
 
-### 5.2 Frontend Environment Variables
-
-Create a `.env` file in the `frontend/` directory:
+### 5.2 Frontend (.env in `frontend/`)
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000/api
@@ -253,83 +157,28 @@ alembic revision --autogenerate -m "Description"
 
 ### 8.1 Running Tests
 
-#### 8.1.1 Run All Tests
 ```bash
 cd backend
-pytest
+pytest                                    # All tests
+pytest --cov=app --cov-report=html       # With coverage (report in htmlcov/index.html)
+pytest tests/test_database.py -v         # Specific file
+pytest tests/test_api_stocks.py::TestGetStocks::test_get_stocks_empty -v  # Specific test
 ```
 
-#### 8.1.2 Run with Coverage
-```bash
-pytest --cov=app --cov-report=html --cov-report=term-missing
-```
+**Configuration**: `backend/pytest.ini` | **Test DB**: SQLite in-memory (auto cleanup)  
+**Coverage Goals**: Phase 1-4: 80%+, Phase 5: 90%+ | **Current**: 88% ✅
 
-Coverage report will be generated in `backend/htmlcov/index.html`
-
-#### 8.1.3 Run Specific Test File
-```bash
-pytest tests/test_database.py -v
-pytest tests/test_api_stocks.py -v
-pytest tests/test_cache.py -v
-```
-
-#### 8.1.4 Run Specific Test
-```bash
-pytest tests/test_api_stocks.py::TestGetStocks::test_get_stocks_empty -v
-```
-
-### 8.2 Test Configuration
-
-Test configuration is in `backend/pytest.ini`:
-- Test paths: `tests/`
-- Coverage: `app/`
-- Reports: HTML and terminal
-
-### 8.3 Test Database
-
-Tests use SQLite in-memory database by default (configured in `tests/conftest.py`). This ensures:
-- Fast test execution
-- No external database dependency
-- Automatic cleanup after tests
-
-### 8.4 Test Coverage Goals
-
-- **Phase 1-4**: Minimum 80% coverage
-- **Phase 5 (Final)**: Minimum 90% coverage
-
-Current coverage: **88%** ✅
-
-### 8.5 Swagger UI Manual Testing
+### 8.2 Swagger UI Testing
 
 **Access**: http://localhost:8000/docs (ReDoc: http://localhost:8000/redoc)
 
-**Prerequisites**:
-1. Database initialized: `python -m app.database`
-2. Backend server running: `uvicorn app.main:app --reload`
-3. Redis running (optional): `redis-cli ping`
+**Prerequisites**: DB initialized (`python -m app.database`), server running (`uvicorn app.main:app --reload`), Redis (optional)
 
-**Testing Steps**:
-1. Open Swagger UI in browser
-2. Click "Try it out" on any endpoint
-3. Fill parameters and click "Execute"
-4. Review response
+**Steps**: Open Swagger UI → Click "Try it out" → Fill parameters → Execute → Review response
 
-**Phase 1 Endpoints to Test**:
-- `GET /api/health` - Verify server/database/Redis status
-- `GET /api/stocks` - List all stocks (with optional filters: type, theme, limit, offset)
-- `GET /api/stocks/{ticker}` - Get stock detail (test with valid/invalid ticker)
-- `GET /api/prices/{ticker}` - Get price data (with optional date range: start_date, end_date)
+**Key Endpoints**: `/api/health`, `/api/stocks`, `/api/stocks/{ticker}`, `/api/prices/{ticker}`
 
-**Verification Checklist**:
-- [ ] All endpoints return expected response format
-- [ ] Error handling works (404, invalid date format, etc.)
-- [ ] Caching works (second request faster)
-- [ ] Filters and pagination work correctly
-
-**Troubleshooting**:
-- **Failed to fetch**: Check server is running (`curl http://localhost:8000/api/health`)
-- **Database errors**: Verify `DATABASE_URL` in `.env` and run `python -m app.database`
-- **Empty responses**: Seed data with `python scripts/seed_stocks.py`
+**Troubleshooting**: Check server (`curl http://localhost:8000/api/health`), verify `.env`, seed data if needed
 
 ---
 

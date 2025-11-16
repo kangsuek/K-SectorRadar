@@ -192,13 +192,14 @@ CREATE TABLE news (
   ticker VARCHAR(10) NOT NULL,
   title VARCHAR(500) NOT NULL,
   url VARCHAR(1000) NOT NULL,
+  url_hash VARCHAR(64) NOT NULL,
   source VARCHAR(100),
   published_at TIMESTAMP,
   collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_news_ticker_published (ticker, published_at),
   INDEX idx_news_published_at (published_at),
-  FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON DELETE CASCADE,
-  UNIQUE KEY uk_news_url (url(255))
+  UNIQUE INDEX ix_news_url_hash (url_hash),
+  FOREIGN KEY (ticker) REFERENCES stocks(ticker) ON DELETE CASCADE
 );
 ```
 
@@ -209,6 +210,7 @@ CREATE TABLE news (
 | `ticker` | VARCHAR(10) | NO | Related stock code (Foreign Key) |
 | `title` | VARCHAR(500) | NO | News title |
 | `url` | VARCHAR(1000) | NO | News URL |
+| `url_hash` | VARCHAR(64) | NO | News URL SHA256 hash (for uniqueness check) |
 | `source` | VARCHAR(100) | YES | Source |
 | `published_at` | TIMESTAMP | YES | Publication timestamp |
 | `collected_at` | TIMESTAMP | NO | Collection timestamp |
@@ -217,13 +219,14 @@ CREATE TABLE news (
 - Primary Key: `id`
 - Composite Index: `idx_news_ticker_published` on (`ticker`, `published_at`)
 - Index: `idx_news_published_at` on `published_at`
-- Unique Index: `uk_news_url` on `url(255)` (first 255 characters)
+- Unique Index: `ix_news_url_hash` on `url_hash` (SHA256 hash of URL)
 
 **Foreign Keys**:
 - `ticker` → `stocks.ticker` (ON DELETE CASCADE)
 
 **Notes**:
-- URL uniqueness is enforced on first 255 characters (MySQL limitation)
+- URL uniqueness is enforced via `url_hash` field (SHA256 hash) to avoid MySQL index key length limitations
+- `url_hash` is automatically generated from the URL when saving news data
 - `collected_at` defaults to current timestamp
 
 ---
@@ -260,6 +263,7 @@ stocks (1) ──< (N) prices
 - `stocks.type`: For filtering by stock type
 - `stocks.theme`: For filtering by theme
 - `news.published_at`: For time-based news queries
+- `news.url_hash`: Unique index for URL deduplication (SHA256 hash)
 
 ---
 
@@ -273,7 +277,12 @@ stocks (1) ──< (N) prices
 - **VARCHAR**: String types with appropriate length limits
 - **TIMESTAMP**: UTC timestamps for consistency
 
-### 6.2 SQLite Considerations
+### 6.2 MySQL Considerations
+- **Index Key Length Limitation**: MySQL has a maximum index key length of 3072 bytes (with utf8mb4, each character can be up to 4 bytes)
+- **Solution for long URLs**: Use `url_hash` (SHA256 hash) instead of direct URL for UNIQUE constraints
+- **Foreign key constraints**: Automatically enforced with CASCADE DELETE
+
+### 6.3 SQLite Considerations (Testing Only)
 - Foreign key constraints must be explicitly enabled
 - Unique constraints on long VARCHAR fields may have limitations
 - Index names must be globally unique
@@ -287,6 +296,11 @@ stocks (1) ──< (N) prices
 - Defined relationships and foreign keys
 - Created indexes for performance optimization
 - Implemented cross-database compatibility
+
+### Schema Update (Phase 1.4)
+- **news table**: Added `url_hash` field (VARCHAR(64)) for URL uniqueness constraint
+  - Replaced direct URL UNIQUE constraint to avoid MySQL index key length limitations
+  - `url_hash` uses SHA256 hash of the URL for efficient duplicate detection
 
 ### Migration Tools
 - **Alembic**: Used for database migrations

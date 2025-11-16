@@ -7,7 +7,7 @@
 import pytest
 import time
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from app.scheduler.data_scheduler import DataScheduler
 from app.models.stock import Stock

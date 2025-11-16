@@ -415,3 +415,4 @@ class TestFinanceCollectorIntegration:
         assert float(saved_price.current_price) == 25050.0
 
 
+

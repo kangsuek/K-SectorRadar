@@ -39,6 +39,42 @@ class StockResponse(StockBase):
     )
 
 
+class StockCreate(StockBase):
+    """Stock 생성 요청 스키마"""
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "ticker": "034020",
+                "name": "두산에너빌리티",
+                "type": "STOCK",
+                "theme": "Nuclear/Power Plant/Energy",
+                "fee": None
+            }
+        }
+    )
+
+
+class StockUpdate(BaseModel):
+    """Stock 수정 요청 스키마"""
+    
+    name: Optional[str] = Field(None, description="종목명")
+    type: Optional[str] = Field(None, description="종목 유형 (STOCK/ETF)")
+    theme: Optional[str] = Field(None, description="테마 분류")
+    fee: Optional[Decimal] = Field(None, description="수수료 (ETF만 해당)")
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "두산에너빌리티",
+                "type": "STOCK",
+                "theme": "Nuclear/Power Plant/Energy",
+                "fee": None
+            }
+        }
+    )
+
+
 class StockListResponse(BaseModel):
     """Stock 목록 응답 스키마"""
     

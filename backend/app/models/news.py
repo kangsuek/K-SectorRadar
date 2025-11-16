@@ -15,6 +15,7 @@ class News(Base):
     ticker = Column(String(10), ForeignKey("stocks.ticker", ondelete="CASCADE"), nullable=False, comment="관련 종목 코드")
     title = Column(String(500), nullable=False, comment="뉴스 제목")
     url = Column(String(1000), nullable=False, comment="뉴스 URL")
+    url_hash = Column(String(64), nullable=False, unique=True, index=True, comment="뉴스 URL 해시 (중복 체크용)")
     source = Column(String(100), nullable=True, comment="출처")
     published_at = Column(DateTime, nullable=True, comment="발행 시각")
     collected_at = Column(DateTime, nullable=False, default=datetime.utcnow, comment="수집 시각")
@@ -22,7 +23,6 @@ class News(Base):
     __table_args__ = (
         Index("idx_news_ticker_published", "ticker", "published_at"),
         Index("idx_news_published_at", "published_at"),
-        UniqueConstraint("url", name="uk_news_url"),
     )
 
     def __repr__(self):

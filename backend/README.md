@@ -59,18 +59,12 @@ EXIT;
 `.env` 파일을 생성하고 다음 내용을 추가하세요:
 
 ```bash
-# Database Configuration
-# MySQL (Development & Production)
-DATABASE_URL=mysql+pymysql://root:password@localhost:3306/sectorradar
+# Database Configuration - MySQL only (required)
+# root 사용자 사용 시
+DATABASE_URL=mysql+pymysql://root:your_password@localhost:3306/sectorradar
 
-# 또는 사용자 계정 사용 시
+# 또는 전용 사용자 계정 사용 시 (권장)
 # DATABASE_URL=mysql+pymysql://sectorradar:your_password@localhost:3306/sectorradar
-
-# PostgreSQL (Optional Alternative - not recommended)
-# DATABASE_URL=postgresql://user:password@localhost:5432/sectorradar
-
-# SQLite (Alternative - for testing only)
-# DATABASE_URL=sqlite:///./data/sectorradar.db
 
 # Redis Configuration
 REDIS_URL=redis://localhost:6379/0
@@ -97,17 +91,18 @@ ENVIRONMENT=development
 
 ### 4. 데이터베이스 초기화
 
+**⚠️ 중요**: MySQL 연결이 올바르게 설정되었는지 확인하세요. 자세한 내용은 [SETUP_MYSQL.md](./SETUP_MYSQL.md)를 참조하세요.
+
 #### 방법 1: 직접 실행 (권장)
 ```bash
-python -m app.database
-```
+# 테이블 생성
+python3 -c "from app.database import init_db; import asyncio; asyncio.run(init_db())"
 
-#### 방법 2: 시드 스크립트 사용
-```bash
+# 초기 종목 데이터 로드
 python scripts/seed_stocks.py
 ```
 
-#### 방법 3: Alembic 마이그레이션 사용
+#### 방법 2: Alembic 마이그레이션 사용
 ```bash
 # 초기 마이그레이션 생성
 alembic revision --autogenerate -m "Initial migration"

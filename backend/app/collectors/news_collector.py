@@ -122,12 +122,15 @@ class NewsCollector:
 
                         # 고유 ID 생성 (URL 기반 해시)
                         news_id = self._generate_news_id(url, ticker)
+                        # URL 해시 생성 (UNIQUE 제약조건용)
+                        url_hash = self._generate_url_hash(url)
 
                         news_data.append({
                             'id': news_id,
                             'ticker': ticker,
                             'title': title,
                             'url': url,
+                            'url_hash': url_hash,
                             'source': source,
                             'published_at': published_at,
                             'timestamp': datetime.now(),
@@ -203,6 +206,19 @@ class NewsCollector:
         hash_obj = hashlib.md5(combined.encode('utf-8'))
         return hash_obj.hexdigest()[:50]  # 최대 50자
     
+    def _generate_url_hash(self, url: str) -> str:
+        """
+        URL 해시 생성 (UNIQUE 제약조건용)
+        
+        Args:
+            url: 뉴스 URL
+        
+        Returns:
+            SHA256 해시 문자열 (64자)
+        """
+        hash_obj = hashlib.sha256(url.encode('utf-8'))
+        return hash_obj.hexdigest()
+    
     def save_news_data(self, db: Session, news_data: List[dict]) -> int:
         """
         뉴스 데이터를 데이터베이스에 저장 (검증 및 정제 포함)
@@ -238,10 +254,16 @@ class NewsCollector:
         saved_count = 0
         try:
             for data in valid_data:
-                # 기존 데이터 확인 (id 또는 url 기준)
+                # 기존 데이터 확인 (url_hash 기준 - 가장 빠름)
                 existing = db.query(News).filter(
-                    News.id == data['id']
+                    News.url_hash == data.get('url_hash')
                 ).first()
+                
+                if not existing:
+                    # id로도 확인 (하위 호환성)
+                    existing = db.query(News).filter(
+                        News.id == data['id']
+                    ).first()
                 
                 if not existing:
                     # URL로도 확인 (id가 다른 경우 대비)
@@ -255,8 +277,13 @@ class NewsCollector:
                     existing.source = data.get('source')
                     existing.published_at = data.get('published_at')
                     existing.collected_at = data.get('collected_at', data.get('timestamp', datetime.now()))
+                    # url_hash가 없으면 추가
+                    if not existing.url_hash and data.get('url_hash'):
+                        existing.url_hash = data['url_hash']
                 else:
-                    # 새로 추가
+                    # 새로 추가 (url_hash가 없으면 생성)
+                    if 'url_hash' not in data or not data.get('url_hash'):
+                        data['url_hash'] = self._generate_url_hash(data['url'])
                     news = News(**data)
                     db.add(news)
                 

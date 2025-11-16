@@ -286,11 +286,13 @@ class TestNewsCollectorSave:
         db_session.commit()
         
         # 뉴스 데이터
+        url = 'https://finance.naver.com/item/news_read.naver?article_id=123'
         news_data = [{
             'id': 'test_news_id_1',
             'ticker': "NEWS001",
             'title': '테스트 뉴스 제목',
-            'url': 'https://finance.naver.com/item/news_read.naver?article_id=123',
+            'url': url,
+            'url_hash': collector._generate_url_hash(url),
             'source': '테스트 출처',
             'published_at': datetime(2025, 11, 14, 10, 0, 0),
             'timestamp': datetime.now()
@@ -332,11 +334,13 @@ class TestNewsCollectorSave:
         db_session.commit()
         
         # 기존 뉴스 데이터
+        url = 'https://finance.naver.com/item/news_read.naver?article_id=123'
         existing_news = News(
             id='existing_news_id',
             ticker="UPDATE001",
             title='기존 제목',
-            url='https://finance.naver.com/item/news_read.naver?article_id=123',
+            url=url,
+            url_hash=collector._generate_url_hash(url),
             source='기존 출처',
             published_at=datetime(2025, 11, 13, 10, 0, 0),
             collected_at=datetime(2025, 11, 13, 10, 0, 0)
@@ -345,11 +349,13 @@ class TestNewsCollectorSave:
         db_session.commit()
         
         # 업데이트할 데이터
+        url = 'https://finance.naver.com/item/news_read.naver?article_id=123'
         news_data = [{
             'id': 'existing_news_id',
             'ticker': "UPDATE001",
             'title': '업데이트된 제목',
-            'url': 'https://finance.naver.com/item/news_read.naver?article_id=123',
+            'url': url,
+            'url_hash': collector._generate_url_hash(url),
             'source': '업데이트된 출처',
             'published_at': datetime(2025, 11, 14, 10, 0, 0),
             'timestamp': datetime.now()
@@ -378,6 +384,7 @@ class TestNewsCollectorSave:
             'ticker': "DUPLICATE001",
             'title': '첫 번째 뉴스',
             'url': url,
+            'url_hash': collector._generate_url_hash(url),
             'source': '출처 1',
             'published_at': datetime(2025, 11, 14, 10, 0, 0),
             'timestamp': datetime.now()
@@ -392,6 +399,7 @@ class TestNewsCollectorSave:
             'ticker': "DUPLICATE001",
             'title': '두 번째 뉴스',
             'url': url,  # 같은 URL
+            'url_hash': collector._generate_url_hash(url),  # 같은 URL이므로 같은 해시
             'source': '출처 2',
             'published_at': datetime(2025, 11, 14, 11, 0, 0),
             'timestamp': datetime.now()
