@@ -9,7 +9,7 @@ from datetime import datetime
 
 from app.config import settings
 from app.database import init_db, engine
-from app.api import stocks, prices, trading, news, refresh, chart
+from app.api import stocks, prices, trading, news, refresh, chart, data_collection, scheduler
 from app.utils.redis import test_redis_connection, close_redis_client
 from app.exceptions import BaseAPIException
 from app.schemas.response import ErrorResponse
@@ -82,6 +82,8 @@ app.include_router(trading.router, prefix="/api/stocks", tags=["trading"])
 app.include_router(news.router, prefix="/api/stocks", tags=["news"])
 app.include_router(chart.router, prefix="/api/stocks", tags=["chart"])
 app.include_router(refresh.router, tags=["refresh"])
+app.include_router(data_collection.router, prefix="/api/data/collect", tags=["data-collection"])
+app.include_router(scheduler.router, prefix="/api/scheduler", tags=["scheduler"])
 
 
 @app.on_event("startup")
@@ -98,6 +100,16 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """애플리케이션 종료 시 실행"""
+    # 스케줄러 종료
+    from app.scheduler.data_scheduler import get_scheduler
+    try:
+        scheduler_instance = get_scheduler()
+        if scheduler_instance.is_running:
+            scheduler_instance.shutdown()
+            print("✅ 스케줄러 종료 완료")
+    except Exception as e:
+        print(f"⚠️ 스케줄러 종료 중 오류: {e}")
+    
     close_redis_client()
 
 
